@@ -10,8 +10,8 @@ namespace Library.Domain.Interfaces
     public interface IUserRepository
     {
         Task<User> GetByIdAsync(int userId);
-        Task AddAsync(User user);
-        Task UpdateAsync(User user);
+        Task<User> AddAsync(User user);
+        Task<User> UpdateAsync(User user);
         Task DeleteAsync(int userId);
     }
 }
