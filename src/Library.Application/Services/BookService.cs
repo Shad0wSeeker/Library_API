@@ -45,16 +45,18 @@ namespace Library.Application.Services
             return _mapper.Map<BookDto>(book);
         }
         
-        public async Task UpdateBookAsync(int id, BookDto bookDto)
+        public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto)
         {
             var book = await _unitOfWork.Books.GetByIdAsync(id);
 
-            if(book != null)
+            if (book == null)
             {
-                _mapper.Map<BookDto>(book);
-                await _unitOfWork.Books.UpdateAsync(book);
-                await _unitOfWork.CompleteAsync();
+                return null;
             }
+            _mapper.Map<BookDto>(book);
+            await _unitOfWork.Books.UpdateAsync(book);
+            await _unitOfWork.CompleteAsync();
+            return _mapper.Map<BookDto>(book);
         }
 
         public async Task DeleteBookAsync(int id)
@@ -64,19 +66,31 @@ namespace Library.Application.Services
         }
 
 
-        public async Task BorrowBookAsync(BorrowBookDto borrowBookDto)
+        public async Task<BorrowBookDto> BorrowBookAsync(BorrowBookDto borrowBookDto)
         {
             var book = await _unitOfWork.Books.GetByIdAsync(borrowBookDto.BookId);
             var user = await _unitOfWork.Users.GetByIdAsync(borrowBookDto.UserId);
 
-            if(book == null && user != null)
+            if (book == null || user == null)
             {
-                user.BorrowedBooks ??= new List<Book>();
-                user.BorrowedBooks.Add(book);
+                return null;
+            }
 
-                await _unitOfWork.Users.UpdateAsync(user);
-                await _unitOfWork.CompleteAsync();
-            }    
+            user.BorrowedBooks ??= new List<Book>();
+            user.BorrowedBooks.Add(book);
+
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            var borrowedBookDto = new BorrowBookDto
+            {
+                BookId = book.Id,
+                UserId = user.Id,
+                BorrowingTime = DateTime.Now, 
+                ReturningTime = DateTime.Now.AddDays(14) 
+            };
+
+            return borrowedBookDto;
         }
 
     }

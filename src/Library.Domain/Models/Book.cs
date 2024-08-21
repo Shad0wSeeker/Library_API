@@ -21,7 +21,8 @@ namespace Library.Domain.Models
 
 
         public Book() { }
-        public Book(string ISBN, string Name, string Genre, string Description, int AuthorId, DateTime BorrowingTime, DateTime ReturningTime, string ImagePath)
+        public Book(string ISBN, string Name, string Genre, string Description, int AuthorId,
+            DateTime BorrowingTime, DateTime ReturningTime, string ImagePath)
         {
             this.ISBN = ISBN;
             this.Name = Name;

@@ -13,8 +13,8 @@ namespace Library.Application.Interfaces
         Task<BookDto> GetBookByIdAsync(int id);
         Task<BookDto> GetBookByISBNAsync(string isbn);
         Task<BookDto> CreateBookAsync(BookDto BookDto);
-        Task UpdateBookAsync(int id, BookDto bookDto);
+        Task<BookDto> UpdateBookAsync(int id, BookDto bookDto);
         Task DeleteBookAsync(int id);
-        Task BorrowBookAsync(BorrowBookDto borrowBookDto);
+        Task<BorrowBookDto> BorrowBookAsync(BorrowBookDto borrowBookDto);
     }
 }

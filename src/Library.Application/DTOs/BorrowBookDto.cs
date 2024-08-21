@@ -10,5 +10,7 @@ namespace Library.Application.DTOs
     {
         public int BookId { get; set; }
         public int UserId { get; set; }
+        public DateTime BorrowingTime { get; set; }
+        public DateTime ReturningTime { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace Library.Infrastructure.Data
             modelBuilder.Entity<Author>()
                 .HasMany(a => a.Books)
                 .WithOne(b => b.Author)
-                .HasForeignKey(b => b.Author.Id);
+                .HasForeignKey(b => b.AuthorId);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.BorrowedBooks)
