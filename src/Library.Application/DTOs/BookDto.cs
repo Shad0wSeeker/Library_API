@@ -14,7 +14,7 @@ namespace Library.Application.DTOs
         public string Genre { get; set; }
         public string Description { get; set; }
         public string AuthorFullName { get; set; }
-        public int AuthorId { get; set; };
+        public int AuthorId { get; set; }
         public DateTime BorrowingTime { get; set; }
         public DateTime ReturningTime { get; set; }
         public string ImagePath { get; set; }
