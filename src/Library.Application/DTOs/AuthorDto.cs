@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Library.Application.DTOs
 {
     public class AuthorDto
@@ -12,6 +13,9 @@ namespace Library.Application.DTOs
         public string AuthorFullName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Country { get; set; }
-        public List<BookDto> Books { get; set; }
+
+        public List<BookDto> Books { get; set; } = new List<BookDto>();
     }
+
+   
 }

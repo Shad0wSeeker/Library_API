@@ -13,12 +13,20 @@ namespace Library.Application.Mapper
     {
         public MappingProfile() 
         {
-            CreateMap<Author, AuthorDto>()
-                .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"))
-                .ReverseMap();
+
+            CreateMap<AuthorDto, Author>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AuthorFullName.Substring(0, src.AuthorFullName.IndexOf(' '))))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.AuthorFullName.IndexOf(' ') >= 0
+                                                                              ? src.AuthorFullName.Substring(src.AuthorFullName.IndexOf(' ') + 1)
+                                                                              : string.Empty))
+                .ReverseMap()
+                .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"));
+
+
+
 
             CreateMap<Book, BookDto>()
-                .ForMember(dest=>dest.AuthorFullName, opt =>opt.MapFrom(src=>$"{src.Author.Name}{src.Author.Surname}"))
+                .ForMember(dest=>dest.AuthorId, opt=>opt.MapFrom(src=>src.AuthorId))
                 .ReverseMap();
 
             CreateMap<User, UserDto>()

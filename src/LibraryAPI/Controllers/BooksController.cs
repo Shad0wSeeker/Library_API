@@ -45,6 +45,9 @@ namespace LibraryAPI.Controllers
             return Ok(book);
         }
 
+        /// <summary>
+        /// Creates a book.
+        /// </summary>
         [HttpPost]
         //[Authorize(Roles ="Admin")]
         public async Task<ActionResult<BookDto>> CreateBook([FromBody] BookDto bookDto)
