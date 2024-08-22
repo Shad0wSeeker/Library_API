@@ -1,9 +1,9 @@
 ﻿using Library.Domain.Interfaces;
 using Library.Domain.Models;
 using Library.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -38,11 +38,13 @@ namespace Library.Infrastructure.Repositories
         public async Task<Book> AddAsync(Book book)
         {
             await _context.Books.AddAsync(book);
+            await _context.SaveChangesAsync();
             return book;
         }
         public async Task<Book> UpdateAsync(Book book)
         {
             _context.Books.Update(book);
+            await _context.SaveChangesAsync();
             return book;
         }
 
@@ -52,6 +54,7 @@ namespace Library.Infrastructure.Repositories
             if(book != null)
             {
                 _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
             }
         }
                         
