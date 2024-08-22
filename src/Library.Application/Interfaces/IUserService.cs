@@ -11,7 +11,7 @@ namespace Library.Application.Interfaces
     {
         Task<UserDto> GetUserByIdAsync(int id);
         Task<UserDto> CreateUserAsync(UserDto userDto);
-        Task UpdateUserAsync(int id, UserDto userDto);
+        Task<UserDto> UpdateUserAsync(int id, UserDto userDto);
         Task DeleteUserAsync(int id);
     }
 }

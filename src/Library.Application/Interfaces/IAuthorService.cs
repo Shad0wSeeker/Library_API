@@ -12,7 +12,7 @@ namespace Library.Application.Interfaces
         Task<IEnumerable<AuthorDto>> GetAllAuthorsAsync();
         Task<AuthorDto> GetAuthorByIdAsync(int id);
         Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto);
-        Task UpdateAuthorAsync(int id, AuthorDto authorDto);
+        Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto);
         Task DeleteAuthorAsync(int id);
     }
 }

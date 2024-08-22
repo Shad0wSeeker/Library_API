@@ -35,16 +35,18 @@ namespace Library.Application.Services
             return _mapper.Map<UserDto>(user);
         }     
 
-        public async Task UpdateUserAsync(int id, UserDto userDto)
+        public async Task<UserDto> UpdateUserAsync(int id, UserDto userDto)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);
 
-            if(user == null)
+            if (user == null)
             {
-                _mapper.Map(userDto, user);
-                await _unitOfWork.Users.UpdateAsync(user);
-                await _unitOfWork.CompleteAsync();
+                return null;
             }
+            _mapper.Map<UserDto>(user);
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+            return _mapper.Map<UserDto>(user);
         }
 
         public async Task DeleteUserAsync(int id)

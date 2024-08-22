@@ -40,16 +40,18 @@ namespace Library.Application.Services
             return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task UpdateAuthorAsync(int id, AuthorDto authorDto)
+        public async Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto)
         {
             var author = await _unitOfWork.Authors.GetByIdAsync(id);
 
-            if (author != null)
+            if (author == null)
             {
-                _mapper.Map(authorDto, author);
-                await _unitOfWork.Authors.UpdateAsync(author);
-                await _unitOfWork.CompleteAsync();
+                return null;
             }
+            _mapper.Map<AuthorDto>(author);
+            await _unitOfWork.Authors.UpdateAsync(author);
+            await _unitOfWork.CompleteAsync();
+            return _mapper.Map<AuthorDto>(author);
         }
 
         public async Task DeleteAuthorAsync(int id)
