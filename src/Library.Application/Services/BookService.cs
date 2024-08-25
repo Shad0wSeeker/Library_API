@@ -3,6 +3,7 @@ using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Library.Domain.Interfaces;
 using Library.Domain.Models;
+using Library.Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +22,12 @@ namespace Library.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
+        public async Task<PaginatedResultDto<BookDto>> GetAllBooksAsync(int pageNumber, int pageSize)
         {
-            var books = await _unitOfWork.Books.GetAllAsync();
-            return _mapper.Map<IEnumerable<BookDto>>(books);
+            var paginatedBooks = await _unitOfWork.Books.GetAllAsync(pageNumber, pageSize);
+            var bookDtos = _mapper.Map<IEnumerable<BookDto>>(paginatedBooks.Items);
+
+            return new PaginatedResultDto<BookDto>(bookDtos, paginatedBooks.TotalCount, pageSize, pageNumber);
         }
 
         public async Task<BookDto> GetBookByIdAsync(int id)

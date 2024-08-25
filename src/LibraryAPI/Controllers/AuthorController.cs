@@ -22,10 +22,10 @@ namespace LibraryAPI.Controllers
 
         [HttpGet]
         [Authorize(Policy = "AdminAndClientPolicy")]
-        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAllAuthors()
+        public async Task<IActionResult> GetAllAuthors(int pageNumber = 1, int pageSize = 3)
         {
-            var authors = await _authorService.GetAllAuthorsAsync();
-            return Ok(authors);
+            var result = await _authorService.GetAllAuthorsAsync(pageNumber, pageSize);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

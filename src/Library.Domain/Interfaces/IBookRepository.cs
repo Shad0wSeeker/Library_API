@@ -1,4 +1,5 @@
 ﻿using Library.Domain.Models;
+using Library.Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Library.Domain.Interfaces
 {
     public interface IBookRepository
     {
-        Task<IEnumerable<Book>> GetAllAsync();
+        Task<PaginatedResultDto<Book>> GetAllAsync(int pageNumber, int pageSize);
         Task<Book> GetByIdAsync(int bookId);
         Task<Book> GetByISBNAsync(string ISBN);
         Task<Book> AddAsync(Book book);

@@ -1,4 +1,5 @@
 ﻿using Library.Domain.Models;
+using Library.Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Library.Domain.Interfaces
 {
     public interface IAuthorRepository
     {
-        Task<IEnumerable<Author>> GetAllAsync();
+        Task<PaginatedResultDto<Author>> GetAllAsync(int pageNumber, int pageSize);
         Task<Author> GetByIdAsync(int authorId);
         Task<Author> AddAsync(Author author);
         Task<Author> UpdateAsync(Author author);

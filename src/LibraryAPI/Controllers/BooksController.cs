@@ -1,5 +1,6 @@
 ﻿using Library.Application.DTOs;
 using Library.Application.Interfaces;
+using Library.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,10 +19,10 @@ namespace LibraryAPI.Controllers
 
         [HttpGet]
         [Authorize(Policy = "AdminAndClientPolicy")]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetAllBooks()
+        public async Task<IActionResult> GetAllBooks(int pageNumber = 1, int pageSize = 3)
         {
-            var books = await _bookService.GetAllBooksAsync();
-            return Ok(books);
+            var result = await _bookService.GetAllBooksAsync(pageNumber, pageSize);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

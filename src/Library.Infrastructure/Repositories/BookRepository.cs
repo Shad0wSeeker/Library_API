@@ -1,6 +1,7 @@
 ﻿using Library.Domain.Interfaces;
 using Library.Domain.Models;
 using Library.Infrastructure.Data;
+using Library.Shared.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,16 @@ namespace Library.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Book>> GetAllAsync()
+        public async Task<PaginatedResultDto<Book>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _context.Books.Include(b=>b.Author).ToListAsync();
+            var totalCount = await _context.Books.CountAsync();
+            var items = await _context.Books
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(b => b.Author)
+                .ToListAsync();
+
+            return new PaginatedResultDto<Book>(items, totalCount, pageSize, pageNumber);
         }
 
         public async Task<Book> GetByIdAsync(int bookId)

@@ -1,4 +1,5 @@
 ﻿using Library.Application.DTOs;
+using Library.Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Library.Application.Interfaces
 {
     public interface IBookService
     {
-        Task<IEnumerable<BookDto>> GetAllBooksAsync();
+        Task<PaginatedResultDto<BookDto>> GetAllBooksAsync(int pageNumber, int pageSize);
         Task<BookDto> GetBookByIdAsync(int id);
         Task<BookDto> GetBookByISBNAsync(string isbn);
         Task<BookDto> CreateBookAsync(BookDto BookDto);

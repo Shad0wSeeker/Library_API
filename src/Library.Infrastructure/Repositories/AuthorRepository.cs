@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Library.Shared.DTO;
 
 namespace Library.Infrastructure.Repositories
 {
@@ -19,9 +20,16 @@ namespace Library.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Author>> GetAllAsync()
+        public async Task<PaginatedResultDto<Author>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _context.Authors.Include(a=>a.Books).ToListAsync();
+            var totalCount = await _context.Authors.CountAsync();
+            var items = await _context.Authors
+                .Include(a => a.Books)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PaginatedResultDto<Author>(items, totalCount, pageSize, pageNumber);
         }
         public async Task<Author> GetByIdAsync(int authorId)
         {
@@ -47,11 +55,6 @@ namespace Library.Infrastructure.Repositories
                 _context.Authors.Remove(author);
             }
         }
-
-       
-
-        
-
-        
+               
     }
 }

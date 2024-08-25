@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Library.Domain.Models;
+using Library.Shared.DTO;
 
 namespace Library.Application.Services
 {
@@ -21,10 +22,12 @@ namespace Library.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<AuthorDto>> GetAllAuthorsAsync()
+        public async Task<PaginatedResultDto<AuthorDto>> GetAllAuthorsAsync(int pageNumber, int pageSize)
         {
-            var authors = await _unitOfWork.Authors.GetAllAsync();
-            return _mapper.Map<IEnumerable<AuthorDto>>(authors);
+            var paginatedAuthors = await _unitOfWork.Authors.GetAllAsync(pageNumber, pageSize);
+            var authorDtos = _mapper.Map<IEnumerable<AuthorDto>>(paginatedAuthors.Items);
+
+            return new PaginatedResultDto<AuthorDto>(authorDtos, paginatedAuthors.TotalCount, pageSize, pageNumber);
         }
 
         public async Task<AuthorDto> GetAuthorByIdAsync(int id)
