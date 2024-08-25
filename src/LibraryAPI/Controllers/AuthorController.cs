@@ -21,8 +21,7 @@ namespace LibraryAPI.Controllers
 
 
         [HttpGet]
-        //[Authorize(Policy = "ClientPolicy")]
-        [Authorize(Policy = "AdminPolicy")]
+        [Authorize(Policy = "AdminAndClientPolicy")]
         public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAllAuthors()
         {
             var authors = await _authorService.GetAllAuthorsAsync();
@@ -30,7 +29,6 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "AdminPolicy")]
         [Authorize(Policy = "ClientPolicy")]
         public async Task<ActionResult<AuthorDto>> GetAuthorById(int id)
         {

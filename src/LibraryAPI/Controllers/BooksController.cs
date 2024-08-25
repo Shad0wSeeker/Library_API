@@ -17,7 +17,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "ClientPolicy")]
+        [Authorize(Policy = "AdminAndClientPolicy")]
         public async Task<ActionResult<IEnumerable<BookDto>>> GetAllBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
@@ -25,7 +25,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "ClientPolicy")]
+        [Authorize(Policy = "AdminAndClientPolicy")]
         public async Task<ActionResult<BookDto>> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
@@ -97,7 +97,6 @@ namespace LibraryAPI.Controllers
 
         [HttpPost("borrow")]
         [Authorize(Policy = "ClientPolicy")]
-        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> BorrowBook([FromBody]BorrowBookDto borrowBookDto)
         {
             var borrowedBook = await _bookService.BorrowBookAsync(borrowBookDto);

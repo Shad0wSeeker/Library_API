@@ -94,6 +94,9 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRole.Admin.ToString()));
     options.AddPolicy("ClientPolicy", policy => policy.RequireRole(UserRole.Client.ToString()));
+    options.AddPolicy("AdminAndClientPolicy", policy => policy.RequireAssertion(context =>
+            context.User.IsInRole(UserRole.Admin.ToString()) ||
+            context.User.IsInRole(UserRole.Client.ToString())));
 });
 
 
