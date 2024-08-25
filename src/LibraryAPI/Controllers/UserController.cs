@@ -1,5 +1,6 @@
 ﻿using Library.Application.DTOs;
 using Library.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<AuthorDto>> CreateUser([FromBody] UserDto userDto)
         {
             if (!ModelState.IsValid)
@@ -41,7 +42,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut]
-        //[Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<AuthorDto>> UpdateUser(int id, [FromBody] UserDto userDto)
         {
             if (id != userDto.Id)
@@ -59,7 +60,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<UserDto>> DeleteUser(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);

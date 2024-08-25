@@ -17,13 +17,15 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "ClientPolicy")]
         public async Task<ActionResult<IEnumerable<BookDto>>> GetAllBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
             return Ok(books);
         }
 
-        [HttpGet("{id}")]  
+        [HttpGet("{id}")]
+        [Authorize(Policy = "ClientPolicy")]
         public async Task<ActionResult<BookDto>> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
@@ -35,6 +37,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet("isbn/{isbn}")]
+        [Authorize(Policy = "ClientPolicy")]
         public async Task<ActionResult<BookDto>> GetBookByISBNAsync(string isbn)
         {
             var book = await _bookService.GetBookByISBNAsync(isbn);
@@ -49,7 +52,7 @@ namespace LibraryAPI.Controllers
         /// Creates a book.
         /// </summary>
         [HttpPost]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<BookDto>> CreateBook([FromBody] BookDto bookDto)
         {
             if (!ModelState.IsValid)
@@ -61,7 +64,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut]
-        //[Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<BookDto>> UpdateBook(int id, [FromBody] BookDto bookDto)
         {
             if (id != bookDto.Id)
@@ -79,7 +82,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<BookDto>> DeleteBook(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
@@ -93,7 +96,8 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPost("borrow")]
-        //[Authorize(Roles ="Admin, Client")]
+        [Authorize(Policy = "ClientPolicy")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> BorrowBook([FromBody]BorrowBookDto borrowBookDto)
         {
             var borrowedBook = await _bookService.BorrowBookAsync(borrowBookDto);

@@ -2,6 +2,7 @@
 using Library.Application.Interfaces;
 using Library.Application.Services;
 using Library.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,8 @@ namespace LibraryAPI.Controllers
 
 
         [HttpGet]
+        //[Authorize(Policy = "ClientPolicy")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAllAuthors()
         {
             var authors = await _authorService.GetAllAuthorsAsync();
@@ -27,6 +30,8 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "AdminPolicy")]
+        [Authorize(Policy = "ClientPolicy")]
         public async Task<ActionResult<AuthorDto>> GetAuthorById(int id)
         {
             var author = await _authorService.GetAuthorByIdAsync(id);
@@ -39,7 +44,7 @@ namespace LibraryAPI.Controllers
 
         
         [HttpPost]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<AuthorDto>> CreateAuthor([FromBody] AuthorDto authorDto)
         {
             if (!ModelState.IsValid)
@@ -51,7 +56,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut]
-        //[Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<AuthorDto>> UpdateAuthor(int id, [FromBody] AuthorDto authorDto)
         {
             if (id != authorDto.Id)
@@ -69,7 +74,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<AuthorDto>> DeleteAuthor(int id)
         {
             var author = await _authorService.GetAuthorByIdAsync(id);

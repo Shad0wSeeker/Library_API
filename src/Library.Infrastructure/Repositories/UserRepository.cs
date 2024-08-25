@@ -44,6 +44,11 @@ namespace Library.Infrastructure.Repositories
             }
         }
 
-        
+        public async Task<User> GetByEmailAndPasswordAsync(string email, string password) 
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+        }
+
+
     }
 }

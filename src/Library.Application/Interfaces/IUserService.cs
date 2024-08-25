@@ -1,4 +1,5 @@
 ﻿using Library.Application.DTOs;
+using Library.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Library.Application.Interfaces
         Task<UserDto> CreateUserAsync(UserDto userDto);
         Task<UserDto> UpdateUserAsync(int id, UserDto userDto);
         Task DeleteUserAsync(int id);
+        Task<User> AuthenticateAsync(string email, string password);
     }
 }

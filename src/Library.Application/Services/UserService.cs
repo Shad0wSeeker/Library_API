@@ -3,6 +3,7 @@ using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Library.Domain.Interfaces;
 using Library.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,12 @@ namespace Library.Application.Services
         {
             await _unitOfWork.Users.DeleteAsync(id);
             await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task<User> AuthenticateAsync(string email, string password)
+        {
+            var user = await _unitOfWork.Users.GetByEmailAndPasswordAsync(email, password);
+            return user;
         }
     }
 }

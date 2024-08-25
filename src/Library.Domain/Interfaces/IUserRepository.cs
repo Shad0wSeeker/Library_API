@@ -13,5 +13,6 @@ namespace Library.Domain.Interfaces
         Task<User> AddAsync(User user);
         Task<User> UpdateAsync(User user);
         Task DeleteAsync(int userId);
+        Task<User> GetByEmailAndPasswordAsync(string email, string password);
     }
 }
