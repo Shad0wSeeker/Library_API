@@ -47,18 +47,24 @@ namespace Library.Application.Services
             await _unitOfWork.CompleteAsync();
             return _mapper.Map<BookDto>(book);
         }
-        
+
         public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto)
         {
             var book = await _unitOfWork.Books.GetByIdAsync(id);
 
             if (book == null)
             {
-                return null;
+                return null; // Книга не найдена
             }
-            _mapper.Map<BookDto>(book);
+
+            // Обновляем данные книги с помощью AutoMapper
+            _mapper.Map(bookDto, book);
+
+            // Обновляем книгу в базе данных
             await _unitOfWork.Books.UpdateAsync(book);
             await _unitOfWork.CompleteAsync();
+
+            // Возвращаем обновленные данные книги
             return _mapper.Map<BookDto>(book);
         }
 
@@ -95,6 +101,8 @@ namespace Library.Application.Services
 
             return borrowedBookDto;
         }
+
+
 
     }
 }

@@ -39,7 +39,7 @@ namespace LibraryAPI.Controllers
 
         [HttpGet("isbn/{isbn}")]
         [Authorize(Policy = "ClientPolicy")]
-        public async Task<ActionResult<BookDto>> GetBookByISBNAsync(string isbn)
+        public async Task<ActionResult<BookDto>> GetBookByISBN(string isbn)
         {
             var book = await _bookService.GetBookByISBNAsync(isbn);
             if (book == null)
@@ -111,6 +111,6 @@ namespace LibraryAPI.Controllers
         }
 
 
-
+       
     }
 }

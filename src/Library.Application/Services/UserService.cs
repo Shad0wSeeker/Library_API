@@ -34,7 +34,7 @@ namespace Library.Application.Services
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CompleteAsync();
             return _mapper.Map<UserDto>(user);
-        }     
+        }
 
         public async Task<UserDto> UpdateUserAsync(int id, UserDto userDto)
         {
@@ -42,13 +42,20 @@ namespace Library.Application.Services
 
             if (user == null)
             {
-                return null;
+                return null; // Пользователь не найден
             }
-            _mapper.Map<UserDto>(user);
+
+            // Обновляем данные пользователя с помощью AutoMapper
+            _mapper.Map(userDto, user);
+
+            // Обновляем пользователя в базе данных
             await _unitOfWork.Users.UpdateAsync(user);
             await _unitOfWork.CompleteAsync();
+
+            // Возвращаем обновленные данные
             return _mapper.Map<UserDto>(user);
         }
+
 
         public async Task DeleteUserAsync(int id)
         {

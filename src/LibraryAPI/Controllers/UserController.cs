@@ -41,7 +41,7 @@ namespace LibraryAPI.Controllers
             return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<AuthorDto>> UpdateUser(int id, [FromBody] UserDto userDto)
         {

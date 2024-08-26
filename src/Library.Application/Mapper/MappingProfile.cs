@@ -23,8 +23,6 @@ namespace Library.Application.Mapper
                 .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"));
 
 
-
-
             CreateMap<Book, BookDto>()
                 .ForMember(dest=>dest.AuthorId, opt=>opt.MapFrom(src=>src.AuthorId))
                 .ReverseMap();
