@@ -12,12 +12,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Library.Domain.Models;
 using Microsoft.OpenApi.Models;
+using FluentValidation.AspNetCore;
+using Library.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => {
+        fv.RegisterValidatorsFromAssembly(typeof(AuthorDtoValidator).Assembly);
+        fv.RegisterValidatorsFromAssembly(typeof(BookDtoValidator).Assembly);
+        fv.RegisterValidatorsFromAssembly(typeof(UserDtoValidator).Assembly);
+    });
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
