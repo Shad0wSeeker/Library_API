@@ -14,6 +14,7 @@ using Library.Domain.Models;
 using Microsoft.OpenApi.Models;
 using FluentValidation.AspNetCore;
 using Library.Application.Validators;
+using LibraryAPI.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,24 +26,21 @@ builder.Services.AddControllers()
         fv.RegisterValidatorsFromAssembly(typeof(UserDtoValidator).Assembly);
     });
 
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddScoped<ITokenService, TokenService>();//
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddApplicationServices();
 
-
-// Add services to the container.
 var key = Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:Secret"]);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,6 +50,20 @@ builder.Services.AddAuthentication(options =>
 {
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var token = context.Request.Headers["Authorization"].ToString();
+            if (token.StartsWith("Bearer "))
+            {
+                token = token.Substring("Bearer ".Length).Trim();
+            }
+            context.Token = token; // Устанавливаем токен
+            return Task.CompletedTask;
+        }
+        
+    };
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
@@ -62,22 +74,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         ClockSkew = TimeSpan.Zero
     };
-});
 
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Library API", Version = "v1" });
 
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "enter token like 'Bearer {token}'"
+        Description = "Enter your token in the format `{token}`"
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -88,7 +98,7 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Id = "ApiKey"
                 }
             },
             new string[] {}
@@ -105,23 +115,16 @@ builder.Services.AddAuthorization(options =>
             context.User.IsInRole(UserRole.Client.ToString())));
 });
 
-
-
-
-
 var connStr = builder.Configuration.GetConnectionString("SqliteConnection");
 string dataDirectory = String.Empty;
 connStr = String.Format(connStr, dataDirectory);
 
-
 var options = new DbContextOptionsBuilder<AppDbContext>().UseSqlite(connStr).Options;
 builder.Services.AddScoped<AppDbContext>(s => new AppDbContext(options));
 
-
-
-
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Инициализация базы данных
 using (var scope = app.Services.CreateScope())
@@ -137,7 +140,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

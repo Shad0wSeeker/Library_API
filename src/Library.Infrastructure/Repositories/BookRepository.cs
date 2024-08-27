@@ -45,6 +45,12 @@ namespace Library.Infrastructure.Repositories
         }
         public async Task<Book> AddAsync(Book book)
         {
+            var existingBook = await _context.Books.FirstOrDefaultAsync(b => b.ISBN == book.ISBN);
+            if (existingBook != null)
+            {
+                throw new InvalidOperationException("Book with this ISBN already exists.");
+            }
+
             await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
             return book;

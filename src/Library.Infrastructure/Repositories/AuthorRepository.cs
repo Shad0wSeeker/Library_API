@@ -38,21 +38,23 @@ namespace Library.Infrastructure.Repositories
         public async Task<Author> AddAsync(Author author)
         {
             await _context.Authors.AddAsync(author);
-            return author;
-            
+            await _context.SaveChangesAsync(); 
+            return author; 
         }
         public async Task<Author> UpdateAsync(Author author)
         {
             _context.Authors.Update(author);
+            await _context.SaveChangesAsync(); // Сохраняем изменения
             return author;
         }
 
         public async Task DeleteAsync(int authorId)
         {
             var author = await GetByIdAsync(authorId);
-            if(author != null)
+            if (author != null)
             {
                 _context.Authors.Remove(author);
+                await _context.SaveChangesAsync(); // Сохраняем изменения
             }
         }
                

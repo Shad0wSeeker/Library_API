@@ -56,6 +56,7 @@ namespace Library.Application.Services
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Secret"]);
+
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -64,15 +65,26 @@ namespace Library.Application.Services
                 ValidIssuer = _configuration["JwtSettings:Issuer"],
                 ValidateAudience = true,
                 ValidAudience = _configuration["JwtSettings:Audience"],
-                ValidateLifetime = false, // Здесь отключаем проверку времени жизни
+                ValidateLifetime = false, // Отключаем проверку времени жизни
                 ClockSkew = TimeSpan.Zero
             };
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid token");
 
-            return principal;
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+                var jwtSecurityToken = securityToken as JwtSecurityToken;
+
+                if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                    throw new SecurityTokenException("Invalid token");
+
+                return principal;
+            }
+            catch (Exception ex)
+            {
+                // Логирование ошибки и возврат null
+                Console.WriteLine($"Error validating token: {ex.Message}");
+                throw;
+            }
         }
     }
 }

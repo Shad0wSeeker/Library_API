@@ -13,7 +13,7 @@ namespace Library.Application.Validators
         public BookDtoValidator()
         {
             RuleFor(book => book.ISBN)
-                .NotEmpty().WithMessage("ISBN is required.")                
+                .NotEmpty().WithMessage("ISBN is required.")
                 .MaximumLength(13).WithMessage("ISBN must be exactly 13 characters long.");
 
             RuleFor(book => book.Name)
@@ -25,7 +25,9 @@ namespace Library.Application.Validators
                 .MaximumLength(50).WithMessage("Genre must not exceed 50 characters.");
 
             RuleFor(book => book.BorrowingTime)
-                .LessThan(book => book.ReturningTime).WithMessage("Borrowing time must be before returning time.");
-        }
+                .LessThan(book => book.ReturningTime).WithMessage("Borrowing time must be before returning time.");           
+
+        }            
+        
     }
 }

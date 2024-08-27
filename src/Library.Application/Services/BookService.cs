@@ -84,6 +84,11 @@ namespace Library.Application.Services
             {
                 return null;
             }
+            // Проверяем, не выдана ли книга уже другому пользователю
+            if (book.BorrowingTime < book.ReturningTime)
+            {
+                throw new InvalidOperationException("The book is already borrowed by another user.");
+            }
 
             user.BorrowedBooks ??= new List<Book>();
             user.BorrowedBooks.Add(book);
