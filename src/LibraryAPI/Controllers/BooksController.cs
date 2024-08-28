@@ -82,9 +82,9 @@ namespace LibraryAPI.Controllers
             return Ok(updatedBook);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<BookDto>> DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             if (book==null)
@@ -92,7 +92,7 @@ namespace LibraryAPI.Controllers
                 return NotFound();
             }
             await _bookService.DeleteBookAsync(id);
-            return NoContent();
+            return Ok(new { message = "Book deleted successfully" });
 
         }
 

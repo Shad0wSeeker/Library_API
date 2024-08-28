@@ -71,9 +71,9 @@ namespace LibraryAPI.Controllers
             return Ok(updatedAuthor);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<AuthorDto>> DeleteAuthor(int id)
+        public async Task<IActionResult> DeleteAuthor(int id)
         {
             var author = await _authorService.GetAuthorByIdAsync(id);
             if (author == null)
@@ -81,7 +81,7 @@ namespace LibraryAPI.Controllers
                 return NotFound();
             }
             await _authorService.DeleteAuthorAsync(id);
-            return NoContent();
+            return Ok(new { message = "Author deleted successfully" });
 
         }
 

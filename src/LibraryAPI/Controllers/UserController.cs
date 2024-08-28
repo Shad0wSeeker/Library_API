@@ -59,7 +59,7 @@ namespace LibraryAPI.Controllers
             return Ok(updatedUser);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<UserDto>> DeleteUser(int id)
         {
@@ -69,7 +69,7 @@ namespace LibraryAPI.Controllers
                 return NotFound();
             }
             await _userService.DeleteUserAsync(id);
-            return NoContent();
+            return Ok(new { message = "User deleted successfully" });
 
         }
     }
