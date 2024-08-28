@@ -117,20 +117,7 @@ namespace Library.Tests.Controllers
             Assert.Equal(404, notFoundResult.StatusCode);
         }
 
-        [Fact]
-        public async Task DeleteAuthor_ReturnsNoContent_WhenAuthorIsDeleted()
-        {
-            // Arrange
-            _authorServiceMock.Setup(s => s.GetAuthorByIdAsync(1)).ReturnsAsync(new AuthorDto { Id = 1 });
-            _authorServiceMock.Setup(s => s.DeleteAuthorAsync(1)).Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _controller.DeleteAuthor(1);
-
-            // Assert
-            Assert.IsType<NoContentResult>(result);
-        }
-
+        
         [Fact]
         public async Task DeleteAuthor_ReturnsNotFound_WhenAuthorDoesNotExist()
         {

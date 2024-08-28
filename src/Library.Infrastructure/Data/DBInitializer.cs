@@ -12,11 +12,6 @@ namespace Library.Infrastructure.Data
     {
         public static async Task SeedData(AppDbContext context)
         {
-            /*if (await context.Authors.AnyAsync() && await context.Books.AnyAsync() && await context.Users.AnyAsync())
-            {
-                return;
-
-            }*/
 
             var authors = new List<Author>
         {
@@ -59,7 +54,6 @@ namespace Library.Infrastructure.Data
                 ImagePath="local" 
             },
 
-
             new Book
             {
                 ISBN = "9780451524935", Name = "1984",
@@ -85,13 +79,13 @@ namespace Library.Infrastructure.Data
         };
 
             var users = new List<User>
-        {
-            new User("admin@example.com",  "hashed_password_1", UserRole.Admin),
+            {
+                new User("admin@example.com",  "hashed_password_1", UserRole.Admin),
 
-            new User("client@example.com", "hashed_password_2", UserRole.Client),
+                new User("client@example.com", "hashed_password_2", UserRole.Client),
 
-            new User("user2@example.com", "pass2", UserRole.Client)
-        };
+                new User("user2@example.com", "pass2", UserRole.Client)
+            };
 
 
             var newAuthors = authors
@@ -129,14 +123,6 @@ namespace Library.Infrastructure.Data
             }
 
 
-            /*context.Authors.AddRange(authors);
-            await context.SaveChangesAsync();
-
-            context.Books.AddRange(books);
-            await context.SaveChangesAsync();
-
-            context.Users.AddRange(users);
-            await context.SaveChangesAsync();*/
         }
     }
 }

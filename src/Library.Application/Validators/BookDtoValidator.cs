@@ -14,7 +14,7 @@ namespace Library.Application.Validators
         {
             RuleFor(book => book.ISBN)
                 .NotEmpty().WithMessage("ISBN is required.")
-                .MaximumLength(13).WithMessage("ISBN must be exactly 13 characters long.");
+                .MaximumLength(13).WithMessage("ISBN must not exceed 13 characters.");
 
             RuleFor(book => book.Name)
                 .NotEmpty().WithMessage("Book name is required.")

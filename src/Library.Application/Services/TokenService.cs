@@ -30,10 +30,10 @@ namespace Library.Application.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                new Claim(ClaimTypes.Name, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JwtSettings:AccessTokenExpiration"])), // Время жизни access токена
+                Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JwtSettings:AccessTokenExpiration"])), 
                 Issuer = _configuration["JwtSettings:Issuer"],
                 Audience = _configuration["JwtSettings:Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -65,7 +65,7 @@ namespace Library.Application.Services
                 ValidIssuer = _configuration["JwtSettings:Issuer"],
                 ValidateAudience = true,
                 ValidAudience = _configuration["JwtSettings:Audience"],
-                ValidateLifetime = false, // Отключаем проверку времени жизни
+                ValidateLifetime = false, 
                 ClockSkew = TimeSpan.Zero
             };
 
@@ -81,7 +81,6 @@ namespace Library.Application.Services
             }
             catch (Exception ex)
             {
-                // Логирование ошибки и возврат null
                 Console.WriteLine($"Error validating token: {ex.Message}");
                 throw;
             }

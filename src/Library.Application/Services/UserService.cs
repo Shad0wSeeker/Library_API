@@ -42,17 +42,14 @@ namespace Library.Application.Services
 
             if (user == null)
             {
-                return null; // Пользователь не найден
+                return null; 
             }
 
-            // Обновляем данные пользователя с помощью AutoMapper
             _mapper.Map(userDto, user);
 
-            // Обновляем пользователя в базе данных
             await _unitOfWork.Users.UpdateAsync(user);
             await _unitOfWork.CompleteAsync();
 
-            // Возвращаем обновленные данные
             return _mapper.Map<UserDto>(user);
         }
 

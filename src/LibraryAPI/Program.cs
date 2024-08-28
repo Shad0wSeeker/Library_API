@@ -18,7 +18,7 @@ using LibraryAPI.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddControllers()
     .AddFluentValidation(fv => {
         fv.RegisterValidatorsFromAssembly(typeof(AuthorDtoValidator).Assembly);
@@ -59,7 +59,7 @@ builder.Services.AddAuthentication(options =>
             {
                 token = token.Substring("Bearer ".Length).Trim();
             }
-            context.Token = token; // Устанавливаем токен
+            context.Token = token; 
             return Task.CompletedTask;
         }
         
@@ -126,7 +126,6 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Инициализация базы данных
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();

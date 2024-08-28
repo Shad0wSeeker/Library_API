@@ -3,12 +3,13 @@ using Library.Application.Interfaces;
 using Library.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace LibraryAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-   // [Authorize]
+    // [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
@@ -75,7 +76,7 @@ namespace LibraryAPI.Controllers
 
             var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
 
-            if(updatedBook == null)
+            if (updatedBook == null)
             {
                 return NotFound();
             }
@@ -87,7 +88,7 @@ namespace LibraryAPI.Controllers
         public async Task<IActionResult> DeleteBook(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
-            if (book==null)
+            if (book == null)
             {
                 return NotFound();
             }
@@ -98,7 +99,7 @@ namespace LibraryAPI.Controllers
 
         [HttpPost("borrow")]
         [Authorize(Policy = "ClientPolicy")]
-        public async Task<IActionResult> BorrowBook([FromBody]BorrowBookDto borrowBookDto)
+        public async Task<IActionResult> BorrowBook([FromBody] BorrowBookDto borrowBookDto)
         {
             var borrowedBook = await _bookService.BorrowBookAsync(borrowBookDto);
 
@@ -110,7 +111,7 @@ namespace LibraryAPI.Controllers
             return Ok(borrowedBook);
         }
 
-
-       
+        
+    
     }
 }

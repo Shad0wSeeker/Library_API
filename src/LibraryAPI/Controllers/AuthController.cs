@@ -38,11 +38,10 @@ namespace LibraryAPI.Controllers
                 return Unauthorized();
             }
 
-            var userModel = _mapper.Map<User>(user); // Преобразование UserDto в User
+            var userModel = _mapper.Map<User>(user); 
             var accessToken = _tokenService.GenerateAccessToken(userModel);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            // Сохранение refresh токена в куки
             Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
@@ -54,50 +53,6 @@ namespace LibraryAPI.Controllers
             return Ok(new { AccessToken = accessToken });
         }
 
-        [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh()
-        {
-            var refreshToken = Request.Cookies["refreshToken"];
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                return Unauthorized();
-            }
-
-            // Декодируем URL-кодирование
-            refreshToken = Uri.UnescapeDataString(refreshToken);
-
-            try
-            {
-                var principal = _tokenService.GetPrincipalFromExpiredToken(refreshToken);
-                var userId = int.Parse(principal.Identity.Name);
-                var userDto = await _userService.GetUserByIdAsync(userId);
-
-                if (userDto == null)
-                {
-                    return Unauthorized();
-                }
-
-                 var user = _mapper.Map<User>(userDto);
-                var newAccessToken = _tokenService.GenerateAccessToken(user);
-                var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-                // Обновление refresh токена в куки
-                Response.Cookies.Append("refreshToken", Uri.EscapeDataString(newRefreshToken), new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Expires = DateTime.UtcNow.AddDays(7)
-                });
-
-                return Ok(new { AccessToken = newAccessToken });
-            }
-            catch (Exception ex)
-            {
-                // Логирование ошибки или другое действие
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
-            }
-        }
-
+       
     }
 }

@@ -30,7 +30,7 @@ namespace Library.Application.Mapper
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
                 .ReverseMap()
-                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))////////////////////////////
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => Enum.Parse<UserRole>(src.Role)));
         }
     }

@@ -44,7 +44,7 @@ namespace Library.Infrastructure.Repositories
         public async Task<Author> UpdateAsync(Author author)
         {
             _context.Authors.Update(author);
-            await _context.SaveChangesAsync(); // Сохраняем изменения
+            await _context.SaveChangesAsync(); 
             return author;
         }
 
@@ -54,7 +54,7 @@ namespace Library.Infrastructure.Repositories
             if (author != null)
             {
                 _context.Authors.Remove(author);
-                await _context.SaveChangesAsync(); // Сохраняем изменения
+                await _context.SaveChangesAsync(); 
             }
         }
                

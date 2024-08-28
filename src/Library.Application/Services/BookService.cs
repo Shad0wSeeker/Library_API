@@ -54,17 +54,14 @@ namespace Library.Application.Services
 
             if (book == null)
             {
-                return null; // Книга не найдена
+                return null; 
             }
 
-            // Обновляем данные книги с помощью AutoMapper
             _mapper.Map(bookDto, book);
 
-            // Обновляем книгу в базе данных
             await _unitOfWork.Books.UpdateAsync(book);
             await _unitOfWork.CompleteAsync();
 
-            // Возвращаем обновленные данные книги
             return _mapper.Map<BookDto>(book);
         }
 
@@ -84,7 +81,6 @@ namespace Library.Application.Services
             {
                 return null;
             }
-            // Проверяем, не выдана ли книга уже другому пользователю
             if (book.BorrowingTime < book.ReturningTime)
             {
                 throw new InvalidOperationException("The book is already borrowed by another user.");

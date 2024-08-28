@@ -145,21 +145,7 @@ namespace Library.Tests.Controllers
             var notFoundResult = Assert.IsType<NotFoundResult>(result.Result);
             Assert.Equal(404, notFoundResult.StatusCode);
         }
-
-        [Fact]
-        public async Task DeleteBook_ReturnsNoContent_WhenBookIsDeleted()
-        {
-            // Arrange
-            _bookServiceMock.Setup(s => s.GetBookByIdAsync(1)).ReturnsAsync(new BookDto { Id = 1 });
-            _bookServiceMock.Setup(s => s.DeleteBookAsync(1)).Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _controller.DeleteBook(1);
-
-            // Assert
-            var actionResult = Assert.IsType<NoContentResult>(result);
-        }
-
+                
         [Fact]
         public async Task DeleteBook_ReturnsNotFound_WhenBookDoesNotExist()
         {

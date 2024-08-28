@@ -49,17 +49,14 @@ namespace Library.Application.Services
 
             if (author == null)
             {
-                return null; // Автор не найден
+                return null; 
             }
 
-            // Обновляем данные автора с помощью AutoMapper
             _mapper.Map(authorDto, author);
 
-            // Обновляем автора в базе данных
             await _unitOfWork.Authors.UpdateAsync(author);
             await _unitOfWork.CompleteAsync();
 
-            // Возвращаем обновленные данные автора
             return _mapper.Map<AuthorDto>(author);
         }
 
