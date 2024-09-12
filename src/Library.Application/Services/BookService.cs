@@ -44,7 +44,7 @@ namespace Library.Application.Services
         {
             var book = _mapper.Map<Book>(BookDto);
             await _unitOfWork.Books.AddAsync(book);
-            await _unitOfWork.CompleteAsync();
+            
             return _mapper.Map<BookDto>(book);
         }
 
@@ -60,7 +60,7 @@ namespace Library.Application.Services
             _mapper.Map(bookDto, book);
 
             await _unitOfWork.Books.UpdateAsync(book);
-            await _unitOfWork.CompleteAsync();
+            
 
             return _mapper.Map<BookDto>(book);
         }
@@ -68,7 +68,7 @@ namespace Library.Application.Services
         public async Task DeleteBookAsync(int id)
         {
            await _unitOfWork.Books.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
+            
         }
 
 
@@ -90,7 +90,7 @@ namespace Library.Application.Services
             user.BorrowedBooks.Add(book);
 
             await _unitOfWork.Users.UpdateAsync(user);
-            await _unitOfWork.CompleteAsync();
+            
 
             var borrowedBookDto = new BorrowBookDto
             {

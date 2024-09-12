@@ -24,10 +24,6 @@ namespace Library.Infrastructure
         public IBookRepository Books { get; private set; }
         public IAuthorRepository Authors { get; private set; }
         public IUserRepository Users { get; private set; }
-
-        public async Task<int> CompleteAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
+                
     }
 }

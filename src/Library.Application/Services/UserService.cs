@@ -32,7 +32,7 @@ namespace Library.Application.Services
         {
             var user = _mapper.Map<User>(userDto);
             await _unitOfWork.Users.AddAsync(user);
-            await _unitOfWork.CompleteAsync();
+            
             return _mapper.Map<UserDto>(user);
         }
 
@@ -48,7 +48,7 @@ namespace Library.Application.Services
             _mapper.Map(userDto, user);
 
             await _unitOfWork.Users.UpdateAsync(user);
-            await _unitOfWork.CompleteAsync();
+            
 
             return _mapper.Map<UserDto>(user);
         }
@@ -57,7 +57,7 @@ namespace Library.Application.Services
         public async Task DeleteUserAsync(int id)
         {
             await _unitOfWork.Users.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
+            
         }
 
         public async Task<User> AuthenticateAsync(string email, string password)

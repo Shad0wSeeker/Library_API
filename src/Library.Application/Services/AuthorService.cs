@@ -39,7 +39,7 @@ namespace Library.Application.Services
         {
             var author = _mapper.Map<Author>(authorDto);
             await _unitOfWork.Authors.AddAsync(author);
-            await _unitOfWork.CompleteAsync();
+            
             return _mapper.Map<AuthorDto>(author);
         }
 
@@ -55,7 +55,7 @@ namespace Library.Application.Services
             _mapper.Map(authorDto, author);
 
             await _unitOfWork.Authors.UpdateAsync(author);
-            await _unitOfWork.CompleteAsync();
+            
 
             return _mapper.Map<AuthorDto>(author);
         }
@@ -63,7 +63,7 @@ namespace Library.Application.Services
         public async Task DeleteAuthorAsync(int id)
         {
             await _unitOfWork.Authors.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
+            
         }
                    
     }
