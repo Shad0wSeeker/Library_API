@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Library.Domain.Models;
 using Library.Shared.DTO;
+using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace Library.Application.Services
 {
@@ -22,30 +24,36 @@ namespace Library.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<PaginatedResultDto<AuthorDto>> GetAllAuthorsAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResultDto<AuthorDto>> GetAllAuthorsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
-            var paginatedAuthors = await _unitOfWork.Authors.GetAllAsync(pageNumber, pageSize);
+            var paginatedAuthors = await _unitOfWork.Authors.GetAllAsync(
+                pageNumber,
+                pageSize,
+                query => query.Include(a => a.Books),
+                cancellationToken
+            );
+
             var authorDtos = _mapper.Map<IEnumerable<AuthorDto>>(paginatedAuthors.Items);
 
             return new PaginatedResultDto<AuthorDto>(authorDtos, paginatedAuthors.TotalCount, pageSize, pageNumber);
         }
 
-        public async Task<AuthorDto> GetAuthorByIdAsync(int id)
+        public async Task<AuthorDto> GetAuthorByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var author = await _unitOfWork.Authors.GetByIdAsync(id);
+            var author = await _unitOfWork.Authors.GetByIdAsync(id, cancellationToken);
             return _mapper.Map<AuthorDto>(author);
         }
-        public async Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto)
+        public async Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto, CancellationToken cancellationToken = default)
         {
             var author = _mapper.Map<Author>(authorDto);
-            await _unitOfWork.Authors.AddAsync(author);
+            await _unitOfWork.Authors.AddAsync(author, cancellationToken);
             
             return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto)
+        public async Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto, CancellationToken cancellationToken = default)
         {
-            var author = await _unitOfWork.Authors.GetByIdAsync(id);
+            var author = await _unitOfWork.Authors.GetByIdAsync(id, cancellationToken);
 
             if (author == null)
             {
@@ -54,15 +62,15 @@ namespace Library.Application.Services
 
             _mapper.Map(authorDto, author);
 
-            await _unitOfWork.Authors.UpdateAsync(author);
+            await _unitOfWork.Authors.UpdateAsync(author, cancellationToken);
             
 
             return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task DeleteAuthorAsync(int id)
+        public async Task DeleteAuthorAsync(int id, CancellationToken cancellationToken = default)
         {
-            await _unitOfWork.Authors.DeleteAsync(id);
+            await _unitOfWork.Authors.DeleteAsync(id, cancellationToken);
             
         }
                    

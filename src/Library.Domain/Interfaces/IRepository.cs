@@ -10,10 +10,10 @@ namespace Library.Domain.Interfaces
 {
     public interface IRepository<T>
     {
-        Task<PaginatedResultDto<T>> GetAllAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IQueryable<T>> includeProperties = null);
-        Task<T> GetByIdAsync(int id);
-        Task<T> AddAsync(T entity);
-        Task<T> UpdateAsync(T entity);
-        Task DeleteAsync(int id);
+        Task<PaginatedResultDto<T>> GetAllAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IQueryable<T>> includeProperties = null, CancellationToken cancellationToken = default);
+        Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<T> AddAsync(T entity, CancellationToken cancellationToken = default);
+        Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default);
+        Task DeleteAsync(int id, CancellationToken cancellationToken = default);
     }
 }

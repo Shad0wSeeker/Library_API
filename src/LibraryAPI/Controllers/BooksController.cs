@@ -20,17 +20,17 @@ namespace LibraryAPI.Controllers
 
         [HttpGet]
         [Authorize(Policy = "AdminAndClientPolicy")]
-        public async Task<IActionResult> GetAllBooks(int pageNumber = 1, int pageSize = 3)
+        public async Task<IActionResult> GetAllBooks(int pageNumber = 1, int pageSize = 3, CancellationToken cancellationToken = default)
         {
-            var result = await _bookService.GetAllBooksAsync(pageNumber, pageSize);
+            var result = await _bookService.GetAllBooksAsync(pageNumber, pageSize, cancellationToken);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         [Authorize(Policy = "AdminAndClientPolicy")]
-        public async Task<ActionResult<BookDto>> GetBookById(int id)
+        public async Task<ActionResult<BookDto>> GetBookById(int id, CancellationToken cancellationToken = default)
         {
-            var book = await _bookService.GetBookByIdAsync(id);
+            var book = await _bookService.GetBookByIdAsync(id, cancellationToken);
             if (book == null)
             {
                 return NotFound();
@@ -40,9 +40,9 @@ namespace LibraryAPI.Controllers
 
         [HttpGet("isbn/{isbn}")]
         [Authorize(Policy = "ClientPolicy")]
-        public async Task<ActionResult<BookDto>> GetBookByISBN(string isbn)
+        public async Task<ActionResult<BookDto>> GetBookByISBN(string isbn, CancellationToken cancellationToken = default)
         {
-            var book = await _bookService.GetBookByISBNAsync(isbn);
+            var book = await _bookService.GetBookByISBNAsync(isbn, cancellationToken);
             if (book == null)
             {
                 return NotFound();
@@ -55,26 +55,26 @@ namespace LibraryAPI.Controllers
         /// </summary>
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<BookDto>> CreateBook([FromBody] BookDto bookDto)
+        public async Task<ActionResult<BookDto>> CreateBook([FromBody] BookDto bookDto, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var createdBook = await _bookService.CreateBookAsync(bookDto);
+            var createdBook = await _bookService.CreateBookAsync(bookDto, cancellationToken);
             return CreatedAtAction(nameof(GetBookById), new { id = createdBook.Id }, createdBook);
         }
 
         [HttpPut]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<BookDto>> UpdateBook(int id, [FromBody] BookDto bookDto)
+        public async Task<ActionResult<BookDto>> UpdateBook(int id, [FromBody] BookDto bookDto, CancellationToken cancellationToken = default)
         {
             if (id != bookDto.Id)
             {
                 return BadRequest("ID mismatched");
             }
 
-            var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
+            var updatedBook = await _bookService.UpdateBookAsync(id, bookDto, cancellationToken);
 
             if (updatedBook == null)
             {
@@ -85,23 +85,23 @@ namespace LibraryAPI.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id, CancellationToken cancellationToken = default)
         {
-            var book = await _bookService.GetBookByIdAsync(id);
+            var book = await _bookService.GetBookByIdAsync(id, cancellationToken);
             if (book == null)
             {
                 return NotFound();
             }
-            await _bookService.DeleteBookAsync(id);
+            await _bookService.DeleteBookAsync(id, cancellationToken);
             return Ok(new { message = "Book deleted successfully" });
 
         }
 
         [HttpPost("borrow")]
         [Authorize(Policy = "ClientPolicy")]
-        public async Task<IActionResult> BorrowBook([FromBody] BorrowBookDto borrowBookDto)
+        public async Task<IActionResult> BorrowBook([FromBody] BorrowBookDto borrowBookDto, CancellationToken cancellationToken = default)
         {
-            var borrowedBook = await _bookService.BorrowBookAsync(borrowBookDto);
+            var borrowedBook = await _bookService.BorrowBookAsync(borrowBookDto, cancellationToken);
 
             if (borrowedBook == null)
             {

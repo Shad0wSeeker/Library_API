@@ -10,12 +10,12 @@ namespace Library.Application.Interfaces
 {
     public interface IBookService
     {
-        Task<PaginatedResultDto<BookDto>> GetAllBooksAsync(int pageNumber, int pageSize);
-        Task<BookDto> GetBookByIdAsync(int id);
-        Task<BookDto> GetBookByISBNAsync(string isbn);
-        Task<BookDto> CreateBookAsync(BookDto BookDto);
-        Task<BookDto> UpdateBookAsync(int id, BookDto bookDto);
-        Task DeleteBookAsync(int id);
-        Task<BorrowBookDto> BorrowBookAsync(BorrowBookDto borrowBookDto);
+        Task<PaginatedResultDto<BookDto>> GetAllBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+        Task<BookDto> GetBookByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<BookDto> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken = default);
+        Task<BookDto> CreateBookAsync(BookDto BookDto, CancellationToken cancellationToken = default);
+        Task<BookDto> UpdateBookAsync(int id, BookDto bookDto, CancellationToken cancellationToken = default);
+        Task DeleteBookAsync(int id, CancellationToken cancellationToken = default);
+        Task<BorrowBookDto> BorrowBookAsync(BorrowBookDto borrowBookDto, CancellationToken cancellationToken = default);
     }
 }

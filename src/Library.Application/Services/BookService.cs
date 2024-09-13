@@ -4,6 +4,7 @@ using Library.Application.Interfaces;
 using Library.Domain.Interfaces;
 using Library.Domain.Models;
 using Library.Shared.DTO;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,35 +23,41 @@ namespace Library.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<PaginatedResultDto<BookDto>> GetAllBooksAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResultDto<BookDto>> GetAllBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
-            var paginatedBooks = await _unitOfWork.Books.GetAllAsync(pageNumber, pageSize);
+            var paginatedBooks = await _unitOfWork.Books.GetAllAsync(
+                pageNumber,
+                pageSize,
+                query => query.Include(a => a.Author),
+                cancellationToken
+            );
+
             var bookDtos = _mapper.Map<IEnumerable<BookDto>>(paginatedBooks.Items);
 
             return new PaginatedResultDto<BookDto>(bookDtos, paginatedBooks.TotalCount, pageSize, pageNumber);
         }
 
-        public async Task<BookDto> GetBookByIdAsync(int id)
+        public async Task<BookDto> GetBookByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var book = await _unitOfWork.Books.GetByIdAsync(id);
+            var book = await _unitOfWork.Books.GetByIdAsync(id, cancellationToken);
             return _mapper.Map<BookDto>(book);
         }
-        public async Task<BookDto> GetBookByISBNAsync(string isbn)
+        public async Task<BookDto> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken = default)
         {
-            var book = await _unitOfWork.Books.GetByISBNAsync(isbn);
+            var book = await _unitOfWork.Books.GetByISBNAsync(isbn, cancellationToken);
             return _mapper.Map<BookDto>(book);
         }
-        public async Task<BookDto> CreateBookAsync(BookDto BookDto)
+        public async Task<BookDto> CreateBookAsync(BookDto BookDto, CancellationToken cancellationToken = default)
         {
             var book = _mapper.Map<Book>(BookDto);
-            await _unitOfWork.Books.AddAsync(book);
+            await _unitOfWork.Books.AddAsync(book, cancellationToken);
             
             return _mapper.Map<BookDto>(book);
         }
 
-        public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto)
+        public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto, CancellationToken cancellationToken = default)
         {
-            var book = await _unitOfWork.Books.GetByIdAsync(id);
+            var book = await _unitOfWork.Books.GetByIdAsync(id, cancellationToken);
 
             if (book == null)
             {
@@ -59,23 +66,23 @@ namespace Library.Application.Services
 
             _mapper.Map(bookDto, book);
 
-            await _unitOfWork.Books.UpdateAsync(book);
+            await _unitOfWork.Books.UpdateAsync(book, cancellationToken);
             
 
             return _mapper.Map<BookDto>(book);
         }
 
-        public async Task DeleteBookAsync(int id)
+        public async Task DeleteBookAsync(int id, CancellationToken cancellationToken = default)
         {
-           await _unitOfWork.Books.DeleteAsync(id);
+           await _unitOfWork.Books.DeleteAsync(id, cancellationToken);
             
         }
 
 
-        public async Task<BorrowBookDto> BorrowBookAsync(BorrowBookDto borrowBookDto)
+        public async Task<BorrowBookDto> BorrowBookAsync(BorrowBookDto borrowBookDto, CancellationToken cancellationToken = default)
         {
-            var book = await _unitOfWork.Books.GetByIdAsync(borrowBookDto.BookId);
-            var user = await _unitOfWork.Users.GetByIdAsync(borrowBookDto.UserId);
+            var book = await _unitOfWork.Books.GetByIdAsync(borrowBookDto.BookId, cancellationToken);
+            var user = await _unitOfWork.Users.GetByIdAsync(borrowBookDto.UserId, cancellationToken);
 
             if (book == null || user == null)
             {
@@ -89,7 +96,7 @@ namespace Library.Application.Services
             user.BorrowedBooks ??= new List<Book>();
             user.BorrowedBooks.Add(book);
 
-            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
             
 
             var borrowedBookDto = new BorrowBookDto

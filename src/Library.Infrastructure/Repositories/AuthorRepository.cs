@@ -15,9 +15,9 @@ namespace Library.Infrastructure.Repositories
     {
         public AuthorRepository(AppDbContext context) : base(context) { }
 
-        public async Task<PaginatedResultDto<Author>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResultDto<Author>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
-            return await GetAllAsync(pageNumber, pageSize, query => query.Include(a => a.Books));
+            return await GetAllAsync(pageNumber, pageSize, query => query.Include(a => a.Books), cancellationToken);
         }
                              
     }

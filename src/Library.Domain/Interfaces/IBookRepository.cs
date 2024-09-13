@@ -10,8 +10,8 @@ namespace Library.Domain.Interfaces
 {
     public interface IBookRepository: IRepository<Book>
     {
-        Task<Book> GetByIdAsync(int bookId);
-        Task<Book> GetByISBNAsync(string ISBN);
+        Task<Book> GetByIdAsync(int bookId, CancellationToken cancellationToken = default);
+        Task<Book> GetByISBNAsync(string ISBN, CancellationToken cancellationToken = default);
 
     }
 }

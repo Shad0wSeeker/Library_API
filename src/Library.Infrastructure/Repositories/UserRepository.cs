@@ -16,9 +16,9 @@ namespace Library.Infrastructure.Repositories
 
         public UserRepository(AppDbContext context) : base(context) { }
 
-        public async Task<User> GetByEmailAndPasswordAsync(string email, string password)
+        public async Task<User> GetByEmailAndPasswordAsync(string email, string password, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email && u.Password == password, cancellationToken);
         }
                 
     }

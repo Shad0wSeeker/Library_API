@@ -19,9 +19,9 @@ namespace LibraryAPI.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDto>> GetUserById(int id)
+        public async Task<ActionResult<UserDto>> GetUserById(int id, CancellationToken cancellationToken = default)
         {
-            var user = await _userService.GetUserByIdAsync(id);
+            var user = await _userService.GetUserByIdAsync(id, cancellationToken);
             if (user == null)
             {
                 return NotFound();
@@ -31,26 +31,26 @@ namespace LibraryAPI.Controllers
 
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<AuthorDto>> CreateUser([FromBody] UserDto userDto)
+        public async Task<ActionResult<AuthorDto>> CreateUser([FromBody] UserDto userDto, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var createdUser = await _userService.CreateUserAsync(userDto);
+            var createdUser = await _userService.CreateUserAsync(userDto, cancellationToken);
             return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
         }
 
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<AuthorDto>> UpdateUser(int id, [FromBody] UserDto userDto)
+        public async Task<ActionResult<AuthorDto>> UpdateUser(int id, [FromBody] UserDto userDto, CancellationToken cancellationToken = default)
         {
             if (id != userDto.Id)
             {
                 return BadRequest("ID mismatched");
             }
 
-            var updatedUser = await _userService.UpdateUserAsync(id, userDto);
+            var updatedUser = await _userService.UpdateUserAsync(id, userDto, cancellationToken);
 
             if (updatedUser == null)
             {
@@ -61,14 +61,14 @@ namespace LibraryAPI.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<UserDto>> DeleteUser(int id)
+        public async Task<ActionResult<UserDto>> DeleteUser(int id, CancellationToken cancellationToken = default)
         {
-            var user = await _userService.GetUserByIdAsync(id);
+            var user = await _userService.GetUserByIdAsync(id, cancellationToken);
             if (user == null)
             {
                 return NotFound();
             }
-            await _userService.DeleteUserAsync(id);
+            await _userService.DeleteUserAsync(id, cancellationToken);
             return Ok(new { message = "User deleted successfully" });
 
         }

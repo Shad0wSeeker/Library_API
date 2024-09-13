@@ -23,22 +23,22 @@ namespace Library.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<UserDto> GetUserByIdAsync(int id)
+        public async Task<UserDto> GetUserByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
+            var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
             return _mapper.Map<UserDto>(user);
         }
-        public async Task<UserDto> CreateUserAsync(UserDto userDto)
+        public async Task<UserDto> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken = default)
         {
             var user = _mapper.Map<User>(userDto);
-            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.Users.AddAsync(user, cancellationToken);
             
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<UserDto> UpdateUserAsync(int id, UserDto userDto)
+        public async Task<UserDto> UpdateUserAsync(int id, UserDto userDto, CancellationToken cancellationToken = default)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
+            var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
 
             if (user == null)
             {
@@ -47,22 +47,22 @@ namespace Library.Application.Services
 
             _mapper.Map(userDto, user);
 
-            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
             
 
             return _mapper.Map<UserDto>(user);
         }
 
 
-        public async Task DeleteUserAsync(int id)
+        public async Task DeleteUserAsync(int id, CancellationToken cancellationToken = default)
         {
-            await _unitOfWork.Users.DeleteAsync(id);
+            await _unitOfWork.Users.DeleteAsync(id, cancellationToken);
             
         }
 
-        public async Task<User> AuthenticateAsync(string email, string password)
+        public async Task<User> AuthenticateAsync(string email, string password, CancellationToken cancellationToken = default)
         {
-            var user = await _unitOfWork.Users.GetByEmailAndPasswordAsync(email, password);
+            var user = await _unitOfWork.Users.GetByEmailAndPasswordAsync(email, password, cancellationToken);
             return user;
         }
     }

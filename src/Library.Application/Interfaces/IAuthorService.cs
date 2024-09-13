@@ -10,10 +10,10 @@ namespace Library.Application.Interfaces
 {
     public interface IAuthorService
     {
-        Task<PaginatedResultDto<AuthorDto>> GetAllAuthorsAsync(int pageNumber, int pageSize);
-        Task<AuthorDto> GetAuthorByIdAsync(int id);
-        Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto);
-        Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto);
-        Task DeleteAuthorAsync(int id);
+        Task<PaginatedResultDto<AuthorDto>> GetAllAuthorsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+        Task<AuthorDto> GetAuthorByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto, CancellationToken cancellationToken = default);
+        Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto, CancellationToken cancellationToken = default);
+        Task DeleteAuthorAsync(int id, CancellationToken cancellationToken = default);
     }
 }
