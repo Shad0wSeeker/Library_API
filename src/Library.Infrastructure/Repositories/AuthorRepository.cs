@@ -11,52 +11,14 @@ using Library.Shared.DTO;
 
 namespace Library.Infrastructure.Repositories
 {
-    public class AuthorRepository : IAuthorRepository
+    public class AuthorRepository : Repository<Author>, IAuthorRepository
     {
-        private readonly AppDbContext _context;
-
-        public AuthorRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        public AuthorRepository(AppDbContext context) : base(context) { }
 
         public async Task<PaginatedResultDto<Author>> GetAllAsync(int pageNumber, int pageSize)
         {
-            var totalCount = await _context.Authors.CountAsync();
-            var items = await _context.Authors
-                .Include(a => a.Books)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return new PaginatedResultDto<Author>(items, totalCount, pageSize, pageNumber);
+            return await GetAllAsync(pageNumber, pageSize, query => query.Include(a => a.Books));
         }
-        public async Task<Author> GetByIdAsync(int authorId)
-        {
-            return await _context.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == authorId);
-        }
-        public async Task<Author> AddAsync(Author author)
-        {
-            await _context.Authors.AddAsync(author);
-            await _context.SaveChangesAsync(); 
-            return author; 
-        }
-        public async Task<Author> UpdateAsync(Author author)
-        {
-            _context.Authors.Update(author);
-            await _context.SaveChangesAsync(); 
-            return author;
-        }
-
-        public async Task DeleteAsync(int authorId)
-        {
-            var author = await GetByIdAsync(authorId);
-            if (author != null)
-            {
-                _context.Authors.Remove(author);
-                await _context.SaveChangesAsync(); 
-            }
-        }
-               
+                             
     }
 }

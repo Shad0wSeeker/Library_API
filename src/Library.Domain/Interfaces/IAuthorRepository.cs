@@ -8,12 +8,8 @@ using System.Threading.Tasks;
 
 namespace Library.Domain.Interfaces
 {
-    public interface IAuthorRepository
+    public interface IAuthorRepository : IRepository<Author>
     {
-        Task<PaginatedResultDto<Author>> GetAllAsync(int pageNumber, int pageSize);
-        Task<Author> GetByIdAsync(int authorId);
-        Task<Author> AddAsync(Author author);
-        Task<Author> UpdateAsync(Author author);
-        Task DeleteAsync(int authorId);
+
     }
 }

@@ -7,12 +7,8 @@ using System.Threading.Tasks;
 
 namespace Library.Domain.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository: IRepository<User>
     {
-        Task<User> GetByIdAsync(int userId);
-        Task<User> AddAsync(User user);
-        Task<User> UpdateAsync(User user);
-        Task DeleteAsync(int userId);
         Task<User> GetByEmailAndPasswordAsync(string email, string password);
     }
 }
