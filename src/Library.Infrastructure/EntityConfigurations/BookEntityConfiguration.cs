@@ -16,6 +16,11 @@ namespace Library.Infrastructure.EntityConfigurations
             builder.HasKey(b => b.Id);
             builder.HasAlternateKey(b => b.ISBN);
 
+            builder.HasIndex(b=>b.Id)
+                .IsUnique();
+            builder.HasIndex(b=>b.ISBN)
+                .IsUnique();
+
             builder.Property(b=>b.ISBN).IsRequired();
             builder.Property(b=>b.Name).IsRequired().HasMaxLength(100);
             builder.Property(b=>b.Genre).IsRequired().HasMaxLength(50);

@@ -49,6 +49,8 @@ namespace LibraryAPI.Infrastructure
                         statusCode = HttpStatusCode.NotFound;
                         message = "Resource not found.";
                         break;
+
+                    
                 }
 
 
@@ -61,7 +63,7 @@ namespace LibraryAPI.Infrastructure
                     error = new
                     {
                         message,
-                        details = ex.Message 
+                        details = ex.Message
                     }
                 };
 

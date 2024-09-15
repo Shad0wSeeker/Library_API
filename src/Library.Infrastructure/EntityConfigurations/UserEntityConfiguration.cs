@@ -17,6 +17,9 @@ namespace Library.Infrastructure.EntityConfigurations
 
             builder.HasMany(u => u.BorrowedBooks)
                 .WithOne();
+           
+            builder.HasIndex(u => u.Email)
+                .IsUnique();
 
             builder.Property(u => u.Role).IsRequired();
             builder.Property(u=>u.Password).IsRequired();   

@@ -15,6 +15,9 @@ namespace Library.Infrastructure.EntityConfigurations
         {
             builder.HasKey(a => a.Id);
 
+            builder.HasIndex(a => a.Id)
+                .IsUnique();
+
             builder.HasMany(a => a.Books)
                 .WithOne(b => b.Author)
                 .HasForeignKey(b => b.AuthorId);

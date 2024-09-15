@@ -40,15 +40,35 @@ namespace Library.Application.Services
         public async Task<BookDto> GetBookByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var book = await _unitOfWork.Books.GetByIdAsync(id, cancellationToken);
+            if (book == null)
+            {
+                throw new InvalidOperationException("Book not found.");
+            }
             return _mapper.Map<BookDto>(book);
         }
         public async Task<BookDto> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken = default)
         {
             var book = await _unitOfWork.Books.GetByISBNAsync(isbn, cancellationToken);
+            if (book == null)
+            {
+                throw new InvalidOperationException("Book not found.");
+            }
             return _mapper.Map<BookDto>(book);
         }
         public async Task<BookDto> CreateBookAsync(BookDto BookDto, CancellationToken cancellationToken = default)
         {
+            var existingBookById = await _unitOfWork.Books.GetByIdAsync(BookDto.Id, cancellationToken);
+            var existingBookByISBN = await _unitOfWork.Books.GetByISBNAsync(BookDto.ISBN, cancellationToken);
+
+            if (existingBookById != null)
+            {
+                throw new InvalidOperationException("Book with such Id already exists");
+            }
+            if (existingBookByISBN != null)
+            {
+                throw new InvalidOperationException("Book with such ISBN already exists");
+            }
+
             var book = _mapper.Map<Book>(BookDto);
             await _unitOfWork.Books.AddAsync(book, cancellationToken);
             
@@ -57,6 +77,10 @@ namespace Library.Application.Services
 
         public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto, CancellationToken cancellationToken = default)
         {
+            if (id != bookDto.Id)
+            {
+                throw new ArgumentException("ID mismatched.");
+            }
             var book = await _unitOfWork.Books.GetByIdAsync(id, cancellationToken);
 
             if (book == null)
@@ -74,8 +98,13 @@ namespace Library.Application.Services
 
         public async Task DeleteBookAsync(int id, CancellationToken cancellationToken = default)
         {
-           await _unitOfWork.Books.DeleteAsync(id, cancellationToken);
-            
+            var book = await _unitOfWork.Books.GetByIdAsync(id, cancellationToken);
+            if (book == null)
+            {
+                throw new InvalidOperationException("Book not found.");
+            }
+
+            await _unitOfWork.Books.DeleteAsync(id, cancellationToken);
         }
 
 
@@ -86,16 +115,26 @@ namespace Library.Application.Services
 
             if (book == null || user == null)
             {
-                return null;
+                throw new InvalidOperationException("Book or user not found.");
             }
-            if (book.BorrowingTime < book.ReturningTime)
+
+            if (book.BorrowingTime != default && book.ReturningTime > DateTime.Now)
             {
-                throw new InvalidOperationException("The book is already borrowed by another user.");
+                throw new InvalidOperationException("The book is already borrowed.");
             }
+
+            if (borrowBookDto.ReturningTime < borrowBookDto.BorrowingTime)
+            {
+                throw new ArgumentException("The returning time must be greater than the borrowing time.");
+            }
+
+            book.BorrowingTime = borrowBookDto.BorrowingTime;
+            book.ReturningTime = borrowBookDto.ReturningTime;
 
             user.BorrowedBooks ??= new List<Book>();
             user.BorrowedBooks.Add(book);
 
+            await _unitOfWork.Books.UpdateAsync(book, cancellationToken);
             await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
             
 

@@ -34,11 +34,8 @@ namespace Library.Infrastructure.Repositories
         public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             var entity = await GetByIdAsync(id, cancellationToken);
-            if (entity != null)
-            {
-                _dbSet.Remove(entity);
-                await _context.SaveChangesAsync(cancellationToken);
-            }
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync(cancellationToken);            
         }
 
         public async Task<PaginatedResultDto<T>> GetAllAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IQueryable<T>> includeProperties = null, CancellationToken cancellationToken = default)

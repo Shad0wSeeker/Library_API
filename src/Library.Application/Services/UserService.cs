@@ -26,10 +26,22 @@ namespace Library.Application.Services
         public async Task<UserDto> GetUserByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
             return _mapper.Map<UserDto>(user);
         }
         public async Task<UserDto> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken = default)
         {
+            var existingUser = await _unitOfWork.Users.GetByEmailAsync(userDto.Email, cancellationToken);
+            
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException("User with such email already exists.");
+
+            }
+
             var user = _mapper.Map<User>(userDto);
             await _unitOfWork.Users.AddAsync(user, cancellationToken);
             
@@ -38,17 +50,19 @@ namespace Library.Application.Services
 
         public async Task<UserDto> UpdateUserAsync(int id, UserDto userDto, CancellationToken cancellationToken = default)
         {
+            if (id != userDto.Id)
+            {
+                throw new ArgumentException("ID mismatched.");
+            }
             var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
 
             if (user == null)
             {
-                return null; 
+                throw new InvalidOperationException("User not found.");
             }
 
             _mapper.Map(userDto, user);
-
-            await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
-            
+            await _unitOfWork.Users.UpdateAsync(user, cancellationToken);            
 
             return _mapper.Map<UserDto>(user);
         }
@@ -56,13 +70,19 @@ namespace Library.Application.Services
 
         public async Task DeleteUserAsync(int id, CancellationToken cancellationToken = default)
         {
+            var user = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
             await _unitOfWork.Users.DeleteAsync(id, cancellationToken);
-            
+
         }
 
         public async Task<User> AuthenticateAsync(string email, string password, CancellationToken cancellationToken = default)
         {
-            var user = await _unitOfWork.Users.GetByEmailAndPasswordAsync(email, password, cancellationToken);
+            var user = await _unitOfWork.Users.GetByEmailAsync(email, cancellationToken);
             return user;
         }
     }

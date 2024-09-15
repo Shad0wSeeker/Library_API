@@ -41,10 +41,21 @@ namespace Library.Application.Services
         public async Task<AuthorDto> GetAuthorByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var author = await _unitOfWork.Authors.GetByIdAsync(id, cancellationToken);
+            if (author == null)
+            {
+                throw new InvalidOperationException("Author not found.");
+            }
             return _mapper.Map<AuthorDto>(author);
         }
         public async Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto, CancellationToken cancellationToken = default)
         {
+            var existingAuthor = await _unitOfWork.Authors.GetByIdAsync(authorDto.Id, cancellationToken);
+            
+            if (existingAuthor != null)
+            {
+                throw new InvalidOperationException("An author with this ID already exists.");
+            }
+
             var author = _mapper.Map<Author>(authorDto);
             await _unitOfWork.Authors.AddAsync(author, cancellationToken);
             
@@ -53,6 +64,10 @@ namespace Library.Application.Services
 
         public async Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto, CancellationToken cancellationToken = default)
         {
+            if (id != authorDto.Id)
+            {
+                throw new ArgumentException("ID mismatched.");
+            }
             var author = await _unitOfWork.Authors.GetByIdAsync(id, cancellationToken);
 
             if (author == null)
@@ -70,8 +85,15 @@ namespace Library.Application.Services
 
         public async Task DeleteAuthorAsync(int id, CancellationToken cancellationToken = default)
         {
+            var author = await _unitOfWork.Authors.GetByIdAsync(id, cancellationToken);
+
+            if (author == null)
+            {
+                throw new InvalidOperationException("Author not found");
+            }
+
             await _unitOfWork.Authors.DeleteAsync(id, cancellationToken);
-            
+                     
         }
                    
     }
