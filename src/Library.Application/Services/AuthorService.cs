@@ -24,7 +24,7 @@ namespace Library.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<PaginatedResultDto<AuthorDto>> GetAllAuthorsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PaginatedResultDto<AuthorResponseDto>> GetAllAuthorsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
             var paginatedAuthors = await _unitOfWork.Authors.GetAllAsync(
                 pageNumber,
@@ -33,46 +33,45 @@ namespace Library.Application.Services
                 cancellationToken
             );
 
-            var authorDtos = _mapper.Map<IEnumerable<AuthorDto>>(paginatedAuthors.Items);
+            var authorDtos = _mapper.Map<IEnumerable<AuthorResponseDto>>(paginatedAuthors.Items);
 
-            return new PaginatedResultDto<AuthorDto>(authorDtos, paginatedAuthors.TotalCount, pageSize, pageNumber);
+            return new PaginatedResultDto<AuthorResponseDto>(authorDtos, paginatedAuthors.TotalCount, pageSize, pageNumber);
         }
 
-        public async Task<AuthorDto> GetAuthorByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<AuthorResponseDto> GetAuthorByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var author = await _unitOfWork.Authors.GetByIdAsync(id, cancellationToken);
+            var paginatedAuthors = await _unitOfWork.Authors.GetAllAsync(
+                pageNumber: 1,
+                pageSize: int.MaxValue,
+                query => query.Include(a => a.Books),
+                cancellationToken
+            );
+
+            var author = paginatedAuthors.Items
+                .FirstOrDefault(a => a.Id == id);
+
             if (author == null)
             {
                 throw new InvalidOperationException("Author not found.");
             }
-            return _mapper.Map<AuthorDto>(author);
-        }
-        public async Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto, CancellationToken cancellationToken = default)
-        {
-            var existingAuthor = await _unitOfWork.Authors.GetByIdAsync(authorDto.Id, cancellationToken);
-            
-            if (existingAuthor != null)
-            {
-                throw new InvalidOperationException("An author with this ID already exists.");
-            }
 
+            return _mapper.Map<AuthorResponseDto>(author);
+        }
+        public async Task<AuthorResponseDto> CreateAuthorAsync(AuthorRequestDto authorDto, CancellationToken cancellationToken = default)
+        {         
             var author = _mapper.Map<Author>(authorDto);
             await _unitOfWork.Authors.AddAsync(author, cancellationToken);
             
-            return _mapper.Map<AuthorDto>(author);
+            return _mapper.Map<AuthorResponseDto>(author);
         }
 
-        public async Task<AuthorDto> UpdateAuthorAsync(int id, AuthorDto authorDto, CancellationToken cancellationToken = default)
+        public async Task<AuthorResponseDto> UpdateAuthorAsync(int id, AuthorRequestDto authorDto, CancellationToken cancellationToken = default)
         {
-            if (id != authorDto.Id)
-            {
-                throw new ArgumentException("ID mismatched.");
-            }
             var author = await _unitOfWork.Authors.GetByIdAsync(id, cancellationToken);
 
             if (author == null)
             {
-                return null; 
+                throw new InvalidOperationException("Author not found.");
             }
 
             _mapper.Map(authorDto, author);
@@ -80,7 +79,7 @@ namespace Library.Application.Services
             await _unitOfWork.Authors.UpdateAsync(author, cancellationToken);
             
 
-            return _mapper.Map<AuthorDto>(author);
+            return _mapper.Map<AuthorResponseDto>(author);
         }
 
         public async Task DeleteAuthorAsync(int id, CancellationToken cancellationToken = default)

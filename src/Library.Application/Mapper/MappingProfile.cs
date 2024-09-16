@@ -14,7 +14,7 @@ namespace Library.Application.Mapper
         public MappingProfile() 
         {
 
-            CreateMap<AuthorDto, Author>()
+            CreateMap<AuthorRequestDto, Author>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AuthorFullName.Substring(0, src.AuthorFullName.IndexOf(' '))))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.AuthorFullName.IndexOf(' ') >= 0
                                                                               ? src.AuthorFullName.Substring(src.AuthorFullName.IndexOf(' ') + 1)
@@ -23,15 +23,28 @@ namespace Library.Application.Mapper
                 .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"));
 
 
-            CreateMap<Book, BookDto>()
+            CreateMap<Author, AuthorResponseDto>()
+                .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"))
+                .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books));
+
+
+
+            CreateMap<Book, BookResponseDto>()
                 .ForMember(dest=>dest.AuthorId, opt=>opt.MapFrom(src=>src.AuthorId))
                 .ReverseMap();
 
-            CreateMap<User, UserDto>()
+            CreateMap<BookRequestDto, Book>()
+                .ReverseMap();
+
+
+
+            CreateMap<UserRequestDto, User>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
-                .ReverseMap()
-                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => Enum.Parse<UserRole>(src.Role)));
+                .ReverseMap();
+
+            CreateMap<User, UserResponseDto>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
+                .ReverseMap();
         }
     }
 }

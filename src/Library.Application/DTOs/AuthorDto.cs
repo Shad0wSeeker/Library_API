@@ -6,16 +6,22 @@ using System.Threading.Tasks;
 
 
 namespace Library.Application.DTOs
-{
-    public class AuthorDto
+{    
+    public class AuthorRequestDto
     {
-        public int Id { get; set; } 
         public string AuthorFullName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Country { get; set; }
-
-        public List<BookDto> Books { get; set; } = new List<BookDto>();
     }
 
-   
+    public class AuthorResponseDto
+    {
+        public int Id { get; set; }
+        public string AuthorFullName { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public string Country { get; set; }
+        public List<BookResponseDto> Books { get; set; } = new List<BookResponseDto>();
+    }
+
+
 }

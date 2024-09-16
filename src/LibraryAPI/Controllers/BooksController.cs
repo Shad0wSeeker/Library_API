@@ -28,7 +28,7 @@ namespace LibraryAPI.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Policy = "AdminAndClientPolicy")]
-        public async Task<ActionResult<BookDto>> GetBookById(int id, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<BookResponseDto>> GetBookById(int id, CancellationToken cancellationToken = default)
         {
             var book = await _bookService.GetBookByIdAsync(id, cancellationToken);            
             return Ok(book);
@@ -36,7 +36,7 @@ namespace LibraryAPI.Controllers
 
         [HttpGet("isbn/{isbn}")]
         [Authorize(Policy = "ClientPolicy")]
-        public async Task<ActionResult<BookDto>> GetBookByISBN(string isbn, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<BookResponseDto>> GetBookByISBN(string isbn, CancellationToken cancellationToken = default)
         {
             var book = await _bookService.GetBookByISBNAsync(isbn, cancellationToken);           
             return Ok(book);
@@ -47,19 +47,15 @@ namespace LibraryAPI.Controllers
         /// </summary>
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<BookDto>> CreateBook([FromBody] BookDto bookDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<BookResponseDto>> CreateBook([FromBody] BookRequestDto bookDto, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             var createdBook = await _bookService.CreateBookAsync(bookDto, cancellationToken);
             return CreatedAtAction(nameof(GetBookById), new { id = createdBook.Id }, createdBook);
         }
 
         [HttpPut]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<BookDto>> UpdateBook(int id, [FromBody] BookDto bookDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<BookResponseDto>> UpdateBook(int id, [FromBody] BookRequestDto bookDto, CancellationToken cancellationToken = default)
         {            
             var updatedBook = await _bookService.UpdateBookAsync(id, bookDto, cancellationToken);
             return Ok(updatedBook);

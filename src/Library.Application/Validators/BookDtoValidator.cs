@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Library.Application.Validators
 {
-    public class BookDtoValidator : AbstractValidator<BookDto>
+    public class BookDtoValidator : AbstractValidator<BookRequestDto>
     {
         public BookDtoValidator()
         {

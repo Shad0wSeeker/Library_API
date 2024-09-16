@@ -10,10 +10,10 @@ namespace Library.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<UserDto> GetUserByIdAsync(int id, CancellationToken cancellationToken = default);
-        Task<UserDto> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken = default);
-        Task<UserDto> UpdateUserAsync(int id, UserDto userDto, CancellationToken cancellationToken = default);
+        Task<UserResponseDto> GetUserByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<UserResponseDto> CreateUserAsync(UserRequestDto userDto, CancellationToken cancellationToken = default);
+        Task<UserResponseDto> UpdateUserAsync(int id, UserRequestDto userDto, CancellationToken cancellationToken = default);
         Task DeleteUserAsync(int id, CancellationToken cancellationToken = default);
-        Task<User> AuthenticateAsync(string email, string password, CancellationToken cancellationToken = default);
+        Task<User> AuthenticateAsync(string email, CancellationToken cancellationToken = default);
     }
 }

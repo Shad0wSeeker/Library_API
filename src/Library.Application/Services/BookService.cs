@@ -23,7 +23,7 @@ namespace Library.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<PaginatedResultDto<BookDto>> GetAllBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PaginatedResultDto<BookResponseDto>> GetAllBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
             var paginatedBooks = await _unitOfWork.Books.GetAllAsync(
                 pageNumber,
@@ -32,38 +32,32 @@ namespace Library.Application.Services
                 cancellationToken
             );
 
-            var bookDtos = _mapper.Map<IEnumerable<BookDto>>(paginatedBooks.Items);
+            var bookDtos = _mapper.Map<IEnumerable<BookResponseDto>>(paginatedBooks.Items);
 
-            return new PaginatedResultDto<BookDto>(bookDtos, paginatedBooks.TotalCount, pageSize, pageNumber);
+            return new PaginatedResultDto<BookResponseDto>(bookDtos, paginatedBooks.TotalCount, pageSize, pageNumber);
         }
 
-        public async Task<BookDto> GetBookByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<BookResponseDto> GetBookByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var book = await _unitOfWork.Books.GetByIdAsync(id, cancellationToken);
             if (book == null)
             {
                 throw new InvalidOperationException("Book not found.");
             }
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookResponseDto>(book);
         }
-        public async Task<BookDto> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken = default)
+        public async Task<BookResponseDto> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken = default)
         {
             var book = await _unitOfWork.Books.GetByISBNAsync(isbn, cancellationToken);
             if (book == null)
             {
                 throw new InvalidOperationException("Book not found.");
             }
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookResponseDto>(book);
         }
-        public async Task<BookDto> CreateBookAsync(BookDto BookDto, CancellationToken cancellationToken = default)
+        public async Task<BookResponseDto> CreateBookAsync(BookRequestDto BookDto, CancellationToken cancellationToken = default)
         {
-            var existingBookById = await _unitOfWork.Books.GetByIdAsync(BookDto.Id, cancellationToken);
             var existingBookByISBN = await _unitOfWork.Books.GetByISBNAsync(BookDto.ISBN, cancellationToken);
-
-            if (existingBookById != null)
-            {
-                throw new InvalidOperationException("Book with such Id already exists");
-            }
             if (existingBookByISBN != null)
             {
                 throw new InvalidOperationException("Book with such ISBN already exists");
@@ -72,15 +66,11 @@ namespace Library.Application.Services
             var book = _mapper.Map<Book>(BookDto);
             await _unitOfWork.Books.AddAsync(book, cancellationToken);
             
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookResponseDto>(book);
         }
 
-        public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto, CancellationToken cancellationToken = default)
+        public async Task<BookResponseDto> UpdateBookAsync(int id, BookRequestDto bookDto, CancellationToken cancellationToken = default)
         {
-            if (id != bookDto.Id)
-            {
-                throw new ArgumentException("ID mismatched.");
-            }
             var book = await _unitOfWork.Books.GetByIdAsync(id, cancellationToken);
 
             if (book == null)
@@ -93,7 +83,7 @@ namespace Library.Application.Services
             await _unitOfWork.Books.UpdateAsync(book, cancellationToken);
             
 
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookResponseDto>(book);
         }
 
         public async Task DeleteBookAsync(int id, CancellationToken cancellationToken = default)

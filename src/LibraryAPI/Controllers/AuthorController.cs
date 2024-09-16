@@ -30,7 +30,7 @@ namespace LibraryAPI.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Policy = "ClientPolicy")]
-        public async Task<ActionResult<AuthorDto>> GetAuthorById(int id, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<AuthorResponseDto>> GetAuthorById(int id, CancellationToken cancellationToken = default)
         {
             var author = await _authorService.GetAuthorByIdAsync(id, cancellationToken);           
             return Ok(author);
@@ -39,19 +39,15 @@ namespace LibraryAPI.Controllers
         
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<AuthorDto>> CreateAuthor([FromBody] AuthorDto authorDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<AuthorResponseDto>> CreateAuthor([FromBody] AuthorRequestDto authorDto, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             var createdAuthor = await _authorService.CreateAuthorAsync(authorDto, cancellationToken);
             return CreatedAtAction(nameof(GetAuthorById), new { id = createdAuthor.Id }, createdAuthor);
         }
 
         [HttpPut]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<AuthorDto>> UpdateAuthor(int id, [FromBody] AuthorDto authorDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<AuthorResponseDto>> UpdateAuthor(int id, [FromBody] AuthorRequestDto authorDto, CancellationToken cancellationToken = default)
         {            
             var updatedAuthor = await _authorService.UpdateAuthorAsync(id, authorDto, cancellationToken);            
             return Ok(updatedAuthor);

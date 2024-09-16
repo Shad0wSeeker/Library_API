@@ -25,13 +25,13 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserDto userDto)
+        public async Task<IActionResult> Login([FromBody] UserResponseDto userDto)
         {
-            if (string.IsNullOrEmpty(userDto.Email) || string.IsNullOrEmpty(userDto.Password))
+            if (string.IsNullOrEmpty(userDto.Email))
             {
                 return BadRequest("Email and password are required.");
             }
-            var user = await _userService.AuthenticateAsync(userDto.Email, userDto.Password);
+            var user = await _userService.AuthenticateAsync(userDto.Email);
 
             if (user == null)
             {
