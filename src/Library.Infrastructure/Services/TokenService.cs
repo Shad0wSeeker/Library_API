@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Library.Application.Services
+namespace Library.Infrastructure.Services
 {
     public class TokenService : ITokenService
     {
@@ -33,7 +33,7 @@ namespace Library.Application.Services
                     new Claim(ClaimTypes.Name, user.Id.ToString()),
                     new Claim(ClaimTypes.Role, user.Role.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JwtSettings:AccessTokenExpiration"])), 
+                Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JwtSettings:AccessTokenExpiration"])),
                 Issuer = _configuration["JwtSettings:Issuer"],
                 Audience = _configuration["JwtSettings:Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -65,7 +65,7 @@ namespace Library.Application.Services
                 ValidIssuer = _configuration["JwtSettings:Issuer"],
                 ValidateAudience = true,
                 ValidAudience = _configuration["JwtSettings:Audience"],
-                ValidateLifetime = false, 
+                ValidateLifetime = false,
                 ClockSkew = TimeSpan.Zero
             };
 
@@ -81,8 +81,7 @@ namespace Library.Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error validating token: {ex.Message}");
-                throw;
+                throw new SecurityTokenException($"Error validating token: {ex.Message}");
             }
         }
     }

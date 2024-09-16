@@ -1,9 +1,11 @@
-﻿using Library.Application.DTOs;
-using Library.Application.Interfaces;
-using Library.Application.Services;
-using Library.Domain.Models;
+﻿using Library.Application.Author.Commands.CreateAuthorCommand;
+using Library.Application.Author.Commands.DeleteAuthorCommand;
+using Library.Application.Author.Commands.UpdateAuthorCommand;
+using Library.Application.Author.Queries.GetAllAuthors;
+using Library.Application.Author.Queries.GetAuthorById;
+using Library.Application.DTOs;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryAPI.Controllers
@@ -12,55 +14,58 @@ namespace LibraryAPI.Controllers
     [Route("api/[controller]")]
     public class AuthorController : ControllerBase
     {
+        private readonly IMediator _mediator;
 
-        private readonly IAuthorService _authorService;
-        public AuthorController(IAuthorService authorService)
+        public AuthorController(IMediator mediator)
         {
-            _authorService = authorService;
+            _mediator = mediator;
         }
 
 
         [HttpGet]
         [Authorize(Policy = "AdminAndClientPolicy")]
-        public async Task<IActionResult> GetAllAuthors(int pageNumber = 1, int pageSize = 3, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAllAuthors([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 3, CancellationToken cancellationToken = default)
         {
-            var result = await _authorService.GetAllAuthorsAsync(pageNumber, pageSize, cancellationToken);
+            var query = new GetAllAuthorsQuery(pageNumber, pageSize);
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         [Authorize(Policy = "ClientPolicy")]
-        public async Task<ActionResult<AuthorResponseDto>> GetAuthorById(int id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAuthorById(int id, CancellationToken cancellationToken = default)
         {
-            var author = await _authorService.GetAuthorByIdAsync(id, cancellationToken);           
-            return Ok(author);
+            var query = new GetAuthorByIdQuery(id);
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
         }
 
-        
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<AuthorResponseDto>> CreateAuthor([FromBody] AuthorRequestDto authorDto, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CreateAuthor([FromBody] AuthorRequestDto authorRequestDto, CancellationToken cancellationToken = default)
         {
-            var createdAuthor = await _authorService.CreateAuthorAsync(authorDto, cancellationToken);
-            return CreatedAtAction(nameof(GetAuthorById), new { id = createdAuthor.Id }, createdAuthor);
+            var command = new CreateAuthorCommand(authorRequestDto);
+            var result = await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetAuthorById), new { id = result.Id }, result);
         }
 
         [HttpPut]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<ActionResult<AuthorResponseDto>> UpdateAuthor(int id, [FromBody] AuthorRequestDto authorDto, CancellationToken cancellationToken = default)
-        {            
-            var updatedAuthor = await _authorService.UpdateAuthorAsync(id, authorDto, cancellationToken);            
-            return Ok(updatedAuthor);
+        public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorRequestDto authorRequestDto, CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateAuthorCommand(id, authorRequestDto);
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteAuthor(int id, CancellationToken cancellationToken = default)
-        {            
-            await _authorService.DeleteAuthorAsync(id, cancellationToken);
+        {
+            var command = new DeleteAuthorCommand(id);
+            await _mediator.Send(command, cancellationToken);
             return Ok(new { message = "Author deleted successfully" });
-
         }
-               
+
     }
 }

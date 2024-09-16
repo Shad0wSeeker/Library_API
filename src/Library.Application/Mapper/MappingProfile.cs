@@ -14,7 +14,7 @@ namespace Library.Application.Mapper
         public MappingProfile() 
         {
 
-            CreateMap<AuthorRequestDto, Author>()
+            CreateMap<AuthorRequestDto, Library.Domain.Models.Author>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.AuthorFullName.Substring(0, src.AuthorFullName.IndexOf(' '))))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.AuthorFullName.IndexOf(' ') >= 0
                                                                               ? src.AuthorFullName.Substring(src.AuthorFullName.IndexOf(' ') + 1)
@@ -23,26 +23,26 @@ namespace Library.Application.Mapper
                 .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"));
 
 
-            CreateMap<Author, AuthorResponseDto>()
+            CreateMap<Library.Domain.Models.Author, AuthorResponseDto>()
                 .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"))
                 .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books));
 
 
 
-            CreateMap<Book, BookResponseDto>()
+            CreateMap<Library.Domain.Models.Book, BookResponseDto>()
                 .ForMember(dest=>dest.AuthorId, opt=>opt.MapFrom(src=>src.AuthorId))
                 .ReverseMap();
 
-            CreateMap<BookRequestDto, Book>()
+            CreateMap<BookRequestDto, Library.Domain.Models.Book>()
                 .ReverseMap();
 
 
 
-            CreateMap<UserRequestDto, User>()
+            CreateMap<UserRequestDto, Library.Domain.Models.User>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
                 .ReverseMap();
 
-            CreateMap<User, UserResponseDto>()
+            CreateMap<Library.Domain.Models.User, UserResponseDto>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
                 .ReverseMap();
         }

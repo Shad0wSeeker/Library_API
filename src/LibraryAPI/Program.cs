@@ -1,6 +1,5 @@
 using Library.Application.Interfaces;
 using Library.Application.Mapper;
-using Library.Application.Services;
 using Library.Domain.Interfaces;
 using Library.Infrastructure;
 using Library.Application;
@@ -15,6 +14,9 @@ using Microsoft.OpenApi.Models;
 using FluentValidation.AspNetCore;
 using Library.Application.Validators;
 using LibraryAPI.Infrastructure;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using Library.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,10 +32,6 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAuthorService, AuthorService>();
-builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 

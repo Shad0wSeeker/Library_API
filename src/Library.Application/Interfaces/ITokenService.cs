@@ -10,7 +10,7 @@ namespace Library.Application.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateAccessToken(User user);
+        string GenerateAccessToken(Library.Domain.Models.User user);
         string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
