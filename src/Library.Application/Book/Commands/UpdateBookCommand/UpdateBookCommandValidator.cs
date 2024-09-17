@@ -11,13 +11,13 @@ namespace Library.Application.Book.Commands.UpdateBookCommand
     {
         public UpdateBookCommandValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id must not be empty.");
-            RuleFor(x => x.BookRequest).NotNull().WithMessage("BookRequest cannot be null.");
-            RuleFor(x => x.BookRequest.ISBN).NotEmpty().WithMessage("ISBN is required.");
-            RuleFor(x => x.BookRequest.Name).NotEmpty().WithMessage("Name is required.");
-            RuleFor(x => x.BookRequest.Genre).NotEmpty().WithMessage("Genre is required.");
-            RuleFor(x => x.BookRequest.Description).NotEmpty().WithMessage("Description is required.");
-            RuleFor(x => x.BookRequest.AuthorId).NotEmpty().WithMessage("AuthorId is required.");
+            RuleFor(x => x.Id).NotEmpty();
+            RuleFor(x => x.BookRequest).NotNull();
+            RuleFor(x => x.BookRequest.ISBN).NotEmpty();
+            RuleFor(x => x.BookRequest.Name).NotEmpty();
+            RuleFor(x => x.BookRequest.Genre).NotEmpty();
+            RuleFor(x => x.BookRequest.Description).NotEmpty();
+            RuleFor(x => x.BookRequest.AuthorId).NotEmpty();
         }
     }
 }

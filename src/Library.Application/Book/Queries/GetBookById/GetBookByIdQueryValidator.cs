@@ -11,7 +11,7 @@ namespace Library.Application.Book.Queries.GetBookById
     {
         public GetBookByIdQueryValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id must not be empty.");
+            RuleFor(x => x.Id).NotEmpty();
         }
     }
 }

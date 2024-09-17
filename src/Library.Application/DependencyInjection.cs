@@ -31,30 +31,7 @@ namespace Library.Application
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             });
 
-            // author
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<DeleteAuthorCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<UpdateAuthorCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<GetAllAuthorsQueryValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<GetAuthorByIdQueryValidator>());
-
-            //book
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<BorrowBookCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<CreateBookCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<DeleteBookCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<UpdateBookCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<GetAllBooksQueryValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<GetBookByIdQueryValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<GetBookByISBNQueryValidator>());
-
-
-            //user
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<DeleteUserCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<UpdateUserCommandValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<AuthenticateUserQueryValidator>());
-            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<GetUserByIdQueryValidator>());
-
+            services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
 
             return services;
         }

@@ -28,6 +28,10 @@ namespace Library.Application.Author.Commands.UpdateAuthorCommand
             {
                 throw new InvalidOperationException("Author not found.");
             }
+            if (string.IsNullOrWhiteSpace(request.AuthorRequest.AuthorFullName) || !request.AuthorRequest.AuthorFullName.Contains(' '))
+            {
+                throw new ArgumentException("AuthorFullName must contain at least a first name and a surname");
+            }
 
             _mapper.Map(request.AuthorRequest, author);
             await _unitOfWork.Authors.UpdateAsync(author, cancellationToken);

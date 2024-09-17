@@ -12,7 +12,7 @@ namespace Library.Application.User.Queries.GetUserById
     {
         public GetUserByIdQueryValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id must not be empty.");
+            RuleFor(x => x.Id).NotEmpty();
         }
     }
 }

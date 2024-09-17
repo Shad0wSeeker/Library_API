@@ -11,9 +11,7 @@ namespace Library.Application.User.Queries.AuthenticateUser
     {
         public AuthenticateUserQueryValidator()
         {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
+            RuleFor(x => x.Email).NotEmpty();
         }
     }
 }

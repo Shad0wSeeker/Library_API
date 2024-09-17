@@ -11,8 +11,7 @@ namespace Library.Application.Author.Commands.DeleteAuthorCommand
     {
         public DeleteAuthorCommandValidator()
         {
-            RuleFor(command => command.Id)
-                .NotEmpty().WithMessage("Id must not be empty.");
+            RuleFor(command => command.Id).NotEmpty();
         }
     }
 }

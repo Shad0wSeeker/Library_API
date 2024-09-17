@@ -11,10 +11,7 @@ namespace Library.Application.Book.Queries.GetBookByISBN
     {
         public GetBookByISBNQueryValidator()
         {
-            RuleFor(x => x.ISBN).NotEmpty().WithMessage("ISBN is required.");
-            RuleFor(x => x.ISBN)
-           .NotEmpty().WithMessage("ISBN is required.")
-           .Matches(@"^\d{1,12}$").WithMessage("ISBN must be a numeric value with up to 12 digits.");
+            RuleFor(x => x.ISBN).NotEmpty();
         }
     }
 }

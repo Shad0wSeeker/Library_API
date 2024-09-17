@@ -11,7 +11,7 @@ namespace Library.Application.User.Commands.DeleteUserCommand
     {
         public DeleteUserCommandValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id must not be empty.");
+            RuleFor(x => x.Id).NotEmpty();
         }
     }
 }

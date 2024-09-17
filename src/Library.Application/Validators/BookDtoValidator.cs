@@ -20,6 +20,9 @@ namespace Library.Application.Validators
                 .NotEmpty().WithMessage("Book name is required.")
                 .MaximumLength(150).WithMessage("Book name must not exceed 150 characters.");
 
+            RuleFor(book => book.AuthorId)
+                .NotEmpty().WithMessage("Author Id is required.");
+
             RuleFor(book => book.Genre)
                 .NotEmpty().WithMessage("Genre is required.")
                 .MaximumLength(50).WithMessage("Genre must not exceed 50 characters.");

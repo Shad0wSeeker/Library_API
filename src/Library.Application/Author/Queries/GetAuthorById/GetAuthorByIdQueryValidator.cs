@@ -11,8 +11,7 @@ namespace Library.Application.Author.Queries.GetAuthorById
     {
         public GetAuthorByIdQueryValidator()
         {
-            RuleFor(command => command.Id)
-                .NotEmpty().WithMessage("Id must not be empty.");
+            RuleFor(command => command.Id).NotEmpty();
         }
     }
 }

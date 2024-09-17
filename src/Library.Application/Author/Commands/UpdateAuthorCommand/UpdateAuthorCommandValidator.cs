@@ -11,21 +11,11 @@ namespace Library.Application.Author.Commands.UpdateAuthorCommand
     {
         public UpdateAuthorCommandValidator()
         {
-            RuleFor(command => command.Id)
-                .NotEmpty().WithMessage("Id must not be empty.");
-
-            RuleFor(command => command.AuthorRequest)
-                .NotNull().WithMessage("AuthorRequest must not be null.");
-
-            RuleFor(command => command.AuthorRequest.AuthorFullName)
-                .NotEmpty().WithMessage("AuthorFullName must not be empty.")
-                .Matches(@"^\S+\s\S+$").WithMessage("AuthorFullName must consist of at least two words.");
-
-            RuleFor(command => command.AuthorRequest.DateOfBirth)
-                .LessThan(DateTime.Now).WithMessage("DateOfBirth must be in the past.");
-
-            RuleFor(command => command.AuthorRequest.Country)
-                .NotEmpty().WithMessage("Country must not be empty.");
+            RuleFor(command => command.Id).NotEmpty();
+            RuleFor(command => command.AuthorRequest).NotEmpty();
+            RuleFor(command => command.AuthorRequest.AuthorFullName).NotEmpty();
+            RuleFor(command => command.AuthorRequest.DateOfBirth).NotEmpty();
+            RuleFor(command => command.AuthorRequest.Country).NotEmpty();
         }
     }
 }

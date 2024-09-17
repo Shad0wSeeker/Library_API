@@ -11,9 +11,9 @@ namespace Library.Application.Book.Commands.BorrowBookCommand
     {
         public BorrowBookCommandValidator()
         {
-            RuleFor(x => x.BookId).GreaterThan(0).WithMessage("BookId must be greater than zero.");
-            RuleFor(x => x.UserId).GreaterThan(0).WithMessage("UserId must be greater than zero.");
-            RuleFor(x => x.BorrowingTime).LessThan(x => x.ReturningTime).WithMessage("Borrowing time must be before returning time.");
+            RuleFor(x => x.BookId).NotEmpty();
+            RuleFor(x => x.UserId).NotEmpty();
+            RuleFor(x => x.BorrowingTime).NotEmpty();
         }
     }
 }

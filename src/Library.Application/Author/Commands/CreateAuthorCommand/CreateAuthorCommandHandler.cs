@@ -24,6 +24,11 @@ namespace Library.Application.Author.Commands.CreateAuthorCommand
 
         public async Task<AuthorResponseDto> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(request.AuthorRequest.AuthorFullName) || !request.AuthorRequest.AuthorFullName.Contains(' '))
+            {
+                throw new ArgumentException("AuthorFullName must contain at least a first name and a surname");
+            }
+
             var author = _mapper.Map<Library.Domain.Models.Author>(request.AuthorRequest);
             await _unitOfWork.Authors.AddAsync(author, cancellationToken);
 
