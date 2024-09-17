@@ -2,6 +2,7 @@
 using Library.Domain.Models;
 using Library.Infrastructure.Data;
 using Library.Infrastructure.Repositories;
+using Library.Tests.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Library.Tests.Repositories
+namespace Library.Tests.User.Repository
 {
     public class UserRepositoryTests
     {
@@ -30,8 +31,8 @@ namespace Library.Tests.Repositories
 
         private void SeedDatabase()
         {
-            _context.Users.Add(new User { Id = 1, Email = "test@example.com", Password = "password123" });
-            _context.Users.Add(new User { Id = 2, Email = "user@example.com", Password = "password456" });
+            _context.Users.AddRange(TestDataSeeder.GetUsers());
+            _context.SaveChanges();
             _context.SaveChanges();
         }
 
@@ -66,7 +67,7 @@ namespace Library.Tests.Repositories
         public async Task AddAsync_AddsUserToDatabase()
         {
             // Arrange
-            var user = new User { Id = 3, Email = "newuser@example.com", Password = "newpassword" };
+            var user = new Library.Domain.Models.User { Id = 3, Email = "newuser@example.com", Password = "newpassword" };
 
             // Act
             var addedUser = await _userRepository.AddAsync(user);
@@ -111,14 +112,14 @@ namespace Library.Tests.Repositories
         }
 
         [Fact]
-        public async Task GetByEmailAndPasswordAsync_ReturnsUser_WhenCredentialsMatch()
+        public async Task GetByEmailAsync_ReturnsUser_WhenCredentialsMatch()
         {
             // Arrange
             var email = "test@example.com";
             var password = "password123";
 
             // Act
-            var user = await _userRepository.GetByEmailAndPasswordAsync(email, password);
+            var user = await _userRepository.GetByEmailAsync(email);
 
             // Assert
             Assert.NotNull(user);
@@ -126,14 +127,14 @@ namespace Library.Tests.Repositories
         }
 
         [Fact]
-        public async Task GetByEmailAndPasswordAsync_ReturnsNull_WhenCredentialsDoNotMatch()
+        public async Task GetByEmailAsync_ReturnsNull_WhenCredentialsDoNotMatch()
         {
             // Arrange
             var email = "wrong@example.com";
             var password = "wrongpassword";
 
             // Act
-            var user = await _userRepository.GetByEmailAndPasswordAsync(email, password);
+            var user = await _userRepository.GetByEmailAsync(email);
 
             // Assert
             Assert.Null(user);

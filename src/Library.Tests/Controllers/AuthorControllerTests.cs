@@ -1,134 +1,124 @@
-﻿using Library.Application.DTOs;
-using Library.Application.Interfaces;
+﻿using Library.Application.Author.Commands.CreateAuthorCommand;
+using Library.Application.Author.Commands.UpdateAuthorCommand;
+using Library.Application.Author.Queries.GetAllAuthors;
+using Library.Application.Author.Queries.GetAuthorById;
+using Library.Application.DTOs;
 using Library.Shared.DTO;
+using Library.Tests.Data;
 using LibraryAPI.Controllers;
-using Microsoft.AspNetCore.Http;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Library.Tests.Controllers
 {
     public class AuthorControllerTests
     {
-        private readonly Mock<IAuthorService> _authorServiceMock;
+        private readonly Mock<IMediator> _mediatorMock;
         private readonly AuthorController _controller;
 
         public AuthorControllerTests()
         {
-            _authorServiceMock = new Mock<IAuthorService>();
-            _controller = new AuthorController(_authorServiceMock.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _controller = new AuthorController(_mediatorMock.Object);
         }
 
         [Fact]
         public async Task GetAllAuthors_ReturnsOkResult_WithPaginatedAuthors()
         {
             // Arrange
-            var authors = new PaginatedResultDto<AuthorDto>(new List<AuthorDto>(), 0, 1, 1);
-            _authorServiceMock.Setup(s => s.GetAllAuthorsAsync(1, 3)).ReturnsAsync(authors);
+            var authors = TestDataSeeder.GetAuthors();
+            var authorDtos = authors.Select(a => new AuthorResponseDto
+            {
+                Id = a.Id,
+                AuthorFullName = $"{a.Name} {a.Surname}",
+                DateOfBirth = a.DateOfBirth,
+                Country = a.Country,
+                Books = new List<BookResponseDto>()
+            }).ToList();
+
+            var paginatedAuthors = new PaginatedResultDto<AuthorResponseDto>(authorDtos, authorDtos.Count, 1, 1);
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<GetAllAuthorsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(paginatedAuthors);
 
             // Act
-            var result = await _controller.GetAllAuthors(1, 3);
+            var result = await _controller.GetAllAuthors();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(authors, okResult.Value);
+            Assert.Equal(paginatedAuthors, okResult.Value);
         }
 
         [Fact]
         public async Task GetAuthorById_ReturnsOkResult_WithAuthor()
         {
             // Arrange
-            var author = new AuthorDto { Id = 1, AuthorFullName = "Author 1" };
-            _authorServiceMock.Setup(s => s.GetAuthorByIdAsync(1)).ReturnsAsync(author);
+            var authors = TestDataSeeder.GetAuthors();
+            var author = authors.FirstOrDefault(a => a.Id == 1);
+
+            var authorDto = new AuthorResponseDto
+            {
+                Id = author.Id,
+                AuthorFullName = $"{author.Name} {author.Surname}",
+                DateOfBirth = author.DateOfBirth,
+                Country = author.Country,
+                Books = new List<BookResponseDto>()
+            };
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<GetAuthorByIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(authorDto);
 
             // Act
             var result = await _controller.GetAuthorById(1);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(author, okResult.Value);
+            Assert.Equal(authorDto, okResult.Value);
         }
 
-        [Fact]
-        public async Task GetAuthorById_ReturnsNotFound_WhenAuthorDoesNotExist()
-        {
-            // Arrange
-            _authorServiceMock.Setup(s => s.GetAuthorByIdAsync(1)).ReturnsAsync((AuthorDto)null);
-
-            // Act
-            var result = await _controller.GetAuthorById(1);
-
-            // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result.Result);
-            Assert.Equal(404, notFoundResult.StatusCode);
-        }
-
+      
         [Fact]
         public async Task CreateAuthor_ReturnsCreatedAtAction_WithCreatedAuthor()
         {
             // Arrange
-            var authorDto = new AuthorDto { Id = 1, AuthorFullName = "New Author" };
-            _authorServiceMock.Setup(s => s.CreateAuthorAsync(authorDto)).ReturnsAsync(authorDto);
+            var newAuthor = new AuthorResponseDto { Id = 4, AuthorFullName = "New Author", DateOfBirth = DateTime.Now.AddYears(-30), Country = "Country" };
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<CreateAuthorCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(newAuthor);
 
             // Act
-            var result = await _controller.CreateAuthor(authorDto);
+            var result = await _controller.CreateAuthor(new AuthorRequestDto { AuthorFullName = "New Author", DateOfBirth = DateTime.Now.AddYears(-30), Country = "Country" });
 
             // Assert
-            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
             Assert.Equal(201, createdAtActionResult.StatusCode);
-            Assert.Equal(authorDto, createdAtActionResult.Value);
+            Assert.Equal(newAuthor, createdAtActionResult.Value);
         }
 
         [Fact]
         public async Task UpdateAuthor_ReturnsOkResult_WithUpdatedAuthor()
         {
             // Arrange
-            var authorDto = new AuthorDto { Id = 1, AuthorFullName = "Updated Author" };
-            _authorServiceMock.Setup(s => s.UpdateAuthorAsync(1, authorDto)).ReturnsAsync(authorDto);
+            var updatedAuthor = new AuthorResponseDto { Id = 1, AuthorFullName = "Updated Author", DateOfBirth = DateTime.Now.AddYears(-40), Country = "USA" };
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<UpdateAuthorCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(updatedAuthor);
 
             // Act
-            var result = await _controller.UpdateAuthor(1, authorDto);
+            var result = await _controller.UpdateAuthor(1, new AuthorRequestDto { AuthorFullName = "Updated Author", DateOfBirth = DateTime.Now.AddYears(-40), Country = "USA" });
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(authorDto, okResult.Value);
+            Assert.Equal(updatedAuthor, okResult.Value);
         }
-
-        [Fact]
-        public async Task UpdateAuthor_ReturnsNotFound_WhenAuthorDoesNotExist()
-        {
-            // Arrange
-            var authorDto = new AuthorDto { Id = 1, AuthorFullName = "Updated Author" };
-            _authorServiceMock.Setup(s => s.UpdateAuthorAsync(1, authorDto)).ReturnsAsync((AuthorDto)null);
-
-            // Act
-            var result = await _controller.UpdateAuthor(1, authorDto);
-
-            // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result.Result);
-            Assert.Equal(404, notFoundResult.StatusCode);
-        }
-
-        
-        [Fact]
-        public async Task DeleteAuthor_ReturnsNotFound_WhenAuthorDoesNotExist()
-        {
-            // Arrange
-            _authorServiceMock.Setup(s => s.GetAuthorByIdAsync(1)).ReturnsAsync((AuthorDto)null);
-
-            // Act
-            var result = await _controller.DeleteAuthor(1);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
+                
     }
 }

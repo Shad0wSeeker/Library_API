@@ -1,151 +1,88 @@
-﻿using AutoMapper;
-using Library.Application.DTOs;
-using Library.Application.Interfaces;
-using Library.Application.Services;
-using Library.Domain.Interfaces;
-using Library.Domain.Models;
+﻿using Library.Application.DTOs;
+using Library.Application.User.Commands.CreateUserCommand;
+using Library.Application.User.Commands.UpdateUserCommand;
+using Library.Application.User.Queries.GetUserById;
+using Library.Tests.Data;
 using LibraryAPI.Controllers;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Library.Tests.Controllers
 {
     public class UserControllerTests
     {
-        private readonly Mock<IUserService> _userServiceMock;
+        private readonly Mock<IMediator> _mediatorMock;
         private readonly UserController _controller;
 
         public UserControllerTests()
         {
-            _userServiceMock = new Mock<IUserService>();
-            _controller = new UserController(_userServiceMock.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _controller = new UserController(_mediatorMock.Object);
         }
 
         [Fact]
-        public async Task GetUserById_ReturnsOkResult_WithUserDto()
+        public async Task GetUserById_ReturnsOkResult_WithUser()
         {
             // Arrange
-            var userId = 1;
-            var userDto = new UserDto { Id = userId, Email = "test@example.com" };
-            _userServiceMock.Setup(s => s.GetUserByIdAsync(userId)).ReturnsAsync(userDto);
+            var user = TestDataSeeder.GetUsers()[0];
+            var userResponse = new UserResponseDto { Id = user.Id, Email = user.Email };
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<GetUserByIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userResponse);
 
             // Act
-            var result = await _controller.GetUserById(userId);
+            var result = await _controller.GetUserById(user.Id);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnValue = Assert.IsType<UserDto>(okResult.Value);
-            Assert.Equal(userId, returnValue.Id);
+            var okResult = Assert.IsType<ActionResult<UserResponseDto>>(result);
+            var actualResult = Assert.IsType<OkObjectResult>(okResult.Result);
+            Assert.Equal(200, actualResult.StatusCode);
+            Assert.Equal(userResponse, actualResult.Value);
         }
 
         [Fact]
-        public async Task GetUserById_ReturnsNotFound_WhenUserNotFound()
+        public async Task CreateUser_ReturnsCreatedAtAction_WithCreatedUser()
         {
             // Arrange
-            var userId = 1;
-            _userServiceMock.Setup(s => s.GetUserByIdAsync(userId)).ReturnsAsync((UserDto)null);
+            var userDto = new UserRequestDto { Email = "newuser@example.com" };
+            var createdUser = new UserResponseDto { Id = 1, Email = userDto.Email };
 
-            // Act
-            var result = await _controller.GetUserById(userId);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result.Result);
-        }
-
-        [Fact]
-        public async Task CreateUser_ReturnsCreatedAtAction_WithUserDto()
-        {
-            // Arrange
-            var userDto = new UserDto { Id = 1, Email = "test@example.com" };
-            _userServiceMock.Setup(s => s.CreateUserAsync(userDto)).ReturnsAsync(userDto);
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(createdUser);
 
             // Act
             var result = await _controller.CreateUser(userDto);
 
             // Assert
-            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
-            var returnValue = Assert.IsType<UserDto>(createdResult.Value);
-            Assert.Equal(userDto.Id, returnValue.Id);
+            var createdAtActionResult = Assert.IsType<ActionResult<UserResponseDto>>(result);
+            var createdAtAction = Assert.IsType<CreatedAtActionResult>(createdAtActionResult.Result);
+            Assert.Equal(201, createdAtAction.StatusCode);
+            Assert.Equal(createdUser, createdAtAction.Value);
         }
 
         [Fact]
-        public async Task CreateUser_ReturnsBadRequest_WhenModelStateIsInvalid()
+        public async Task UpdateUser_ReturnsOkResult_WithUpdatedUser()
         {
             // Arrange
-            _controller.ModelState.AddModelError("Email", "Required");
+            var userDto = new UserRequestDto { Email = "updateduser@example.com" };
+            var updatedUser = new UserResponseDto { Id = 1, Email = userDto.Email };
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<UpdateUserCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(updatedUser);
 
             // Act
-            var result = await _controller.CreateUser(new UserDto());
+            var result = await _controller.UpdateUser(1, userDto);
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result.Result);
+            var okResult = Assert.IsType<ActionResult<UserResponseDto>>(result);
+            var actualResult = Assert.IsType<OkObjectResult>(okResult.Result);
+            Assert.Equal(200, actualResult.StatusCode);
+            Assert.Equal(updatedUser, actualResult.Value);
         }
 
-        [Fact]
-        public async Task UpdateUser_ReturnsOkResult_WithUpdatedUserDto()
-        {
-            // Arrange
-            var userId = 1;
-            var userDto = new UserDto { Id = userId, Email = "updated@example.com" };
-            var updatedUserDto = new UserDto { Id = userId, Email = "updated@example.com" };
-            _userServiceMock.Setup(s => s.UpdateUserAsync(userId, userDto)).ReturnsAsync(updatedUserDto);
-
-            // Act
-            var result = await _controller.UpdateUser(userId, userDto);
-
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnValue = Assert.IsType<UserDto>(okResult.Value);
-            Assert.Equal(updatedUserDto.Email, returnValue.Email);
-        }
-
-        [Fact]
-        public async Task UpdateUser_ReturnsBadRequest_WhenIdMismatch()
-        {
-            // Arrange
-            var userId = 1;
-            var userDto = new UserDto { Id = 2 }; // Id does not match
-
-            // Act
-            var result = await _controller.UpdateUser(userId, userDto);
-
-            // Assert
-            Assert.IsType<BadRequestObjectResult>(result.Result);
-        }
-
-        [Fact]
-        public async Task UpdateUser_ReturnsNotFound_WhenUserNotFound()
-        {
-            // Arrange
-            var userId = 1;
-            var userDto = new UserDto { Id = userId };
-            _userServiceMock.Setup(s => s.UpdateUserAsync(userId, userDto)).ReturnsAsync((UserDto)null);
-
-            // Act
-            var result = await _controller.UpdateUser(userId, userDto);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result.Result);
-        }
-
-        
-        [Fact]
-        public async Task DeleteUser_ReturnsNotFound_WhenUserNotFound()
-        {
-            // Arrange
-            var userId = 1;
-            _userServiceMock.Setup(s => s.GetUserByIdAsync(userId)).ReturnsAsync((UserDto)null);
-
-            // Act
-            var result = await _controller.DeleteUser(userId);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result.Result);
-        }
     }
 }

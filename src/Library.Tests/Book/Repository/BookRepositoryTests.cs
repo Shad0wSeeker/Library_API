@@ -1,6 +1,7 @@
 ﻿using Library.Domain.Models;
 using Library.Infrastructure.Data;
 using Library.Infrastructure.Repositories;
+using Library.Tests.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Library.Tests.Repositories
+namespace Library.Tests.Book.Repository
 {
     public class BookRepositoryTests : IDisposable
     {
@@ -29,42 +30,8 @@ namespace Library.Tests.Repositories
 
         private void SeedDatabase()
         {
-            var author = new Author
-            {
-                Id = 1,
-                Name = "Author1",
-                Surname = "Surname1",
-                DateOfBirth = DateTime.Now.AddYears(-30),
-                Country = "Country1"
-            };
-            _context.Authors.Add(author);
-
-            var book1 = new Book
-            {
-                Id = 1,
-                ISBN = "1234567890",
-                Name = "Book1",
-                Genre = "Genre1",
-                Description = "Description1",
-                AuthorId = author.Id,
-                BorrowingTime = DateTime.Now,
-                ReturningTime = DateTime.Now.AddDays(10),
-                ImagePath = "Path1"
-            };
-            var book2 = new Book
-            {
-                Id = 2,
-                ISBN = "0987654321",
-                Name = "Book2",
-                Genre = "Genre2",
-                Description = "Description2",
-                AuthorId = author.Id,
-                BorrowingTime = DateTime.Now,
-                ReturningTime = DateTime.Now.AddDays(20),
-                ImagePath = "Path2"
-            };
-
-            _context.Books.AddRange(book1, book2);
+            _context.Authors.AddRange(TestDataSeeder.GetAuthors());
+            _context.Books.AddRange(TestDataSeeder.GetBooks());
             _context.SaveChanges();
         }
 
@@ -73,7 +40,7 @@ namespace Library.Tests.Repositories
         public async Task AddAsync_AddsBookToDatabase()
         {
             // Arrange
-            var newBook = new Book
+            var newBook = new Library.Domain.Models.Book
             {
                 ISBN = "1122334455",
                 Name = "New Book",
